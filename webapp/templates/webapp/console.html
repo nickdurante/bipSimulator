@@ -40,9 +40,8 @@
 
   chatSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
-      if ( data['type'] === 'message'){
-        document.getElementById("chat-log").innerHTML += "&#91;" + data.from + "&#93;&#58; &#32;" + data.content + "<br>";
-      }
+      console.log(data);
+      document.getElementById("chat-log").innerHTML += data;
 
   };
 
