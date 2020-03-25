@@ -36,7 +36,7 @@
 
 {% block extra_javascript %}
 <script>
-      var chatSocket = new WebSocket("ws://192.168.4.1:6789");
+      var chatSocket = new WebSocket("ws://0.0.0.0:6789");
 
   chatSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);

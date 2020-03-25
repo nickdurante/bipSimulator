@@ -9,7 +9,7 @@ from sys import argv
     Takes argv[1] and sends it to the server sepcified
     python3 send_message.py '{"type": "message", "content": "rocknroll"}'
 """
-IP = "192.168.4.1"
+IP = "0.0.0.0"
 PORT = "6789"
 uri = "ws://"+ IP + ":" + PORT
 

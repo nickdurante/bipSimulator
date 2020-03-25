@@ -4,15 +4,12 @@
 
 import asyncio
 import json
-import logging
 import websockets
 import serial
 
-IP = "192.168.4.1"
+IP = "0.0.0.0"
 PORT = 6789
-ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
 
-logging.basicConfig()
 
 STATE = {"value": 0}
 USERS = set()
@@ -42,11 +39,9 @@ async def notify_users():
         message = users_event()
         await asyncio.wait([user.send(message) for user in USERS])
 
+async def broadcast_message(message):
+    await asyncio.wait([user.send(message) for user in USERS])
 
-async def notify_message():
-    if len(MESSAGE_LIST) != 0:
-        message = serial_event()
-        await asyncio.wait([user.send(message) for user in USERS])
 
 async def register(websocket):
     USERS.add(websocket)
@@ -67,14 +62,7 @@ async def counter(websocket, path):
         async for message in websocket:
             data = json.loads(message)
             print(data)
-            if data["type"] == "message":
-                MESSAGE_LIST.append(data)
-                if data["from"] == "user":
-                    ser.write(data["content"].encode())
-                    print("Wrote serial: " + data["content"])
-                await notify_message()
-            else:
-                logging.error("unsupported event: {}", data)
+            await broadcast_message(message)
     finally:
         await unregister(websocket)
 
