@@ -1,0 +1,73 @@
+{% extends 'webapp/base_bulma.html' %}
+
+
+{% block title %}
+    Console
+{% endblock %}
+
+
+{% block subtitle %}
+    Async - Read and send messages
+{% endblock %}
+
+{% block content %}
+
+    <strong>Messages</strong>
+      <div class="container is-fluid">
+      <div class="notification" style="overflow: auto; max-height: 40rem">
+          <code id="chat-log"></code>
+      </div>
+    </div>
+
+    <div class="container is-fluid">
+
+        <div class="field">
+            <label class="label">Send message</label>
+            <div class="control">
+                <input class="input" id="chat-message-input" type="text" style="max-width: 90%;" placeholder="Type message..." name="user_message">
+                <button class="button is-info" id="chat-message-submit" style="width: 9%" type="submit">Send</button>
+
+            </div>
+        </div>
+
+
+</div>
+{% endblock %}
+
+{% block extra_javascript %}
+<script>
+      var chatSocket = new WebSocket("ws://192.168.4.1:6789");
+
+  chatSocket.onmessage = function(e) {
+      var data = JSON.parse(e.data);
+      if ( data['type'] === 'message'){
+        document.getElementById("chat-log").innerHTML += "&#91;" + data.from + "&#93;&#58; &#32;" + data.content + "<br>";
+      }
+
+  };
+
+  chatSocket.onclose = function(e) {
+      console.error('Chat socket closed unexpectedly');
+  };
+
+  document.querySelector('#chat-message-input').focus();
+  document.querySelector('#chat-message-input').onkeyup = function(e) {
+      if (e.keyCode === 13) {  // enter, return
+          document.querySelector('#chat-message-submit').click();
+      }
+  };
+
+  document.querySelector('#chat-message-submit').onclick = function(e) {
+      var messageInputDom = document.querySelector('#chat-message-input');
+      var message = messageInputDom.value;
+      chatSocket.send(JSON.stringify({
+          'type': 'message',
+          'from': 'user',
+          'content': message
+      }));
+
+      messageInputDom.value = '';
+  };
+    </script>
+
+{% endblock %}
