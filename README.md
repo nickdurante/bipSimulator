@@ -1,5 +1,27 @@
 # bipEmulator
 
+## Introduction
+
+This is a collection of utilities to view and debug BipOS programs on a PC.
+
+## C libraries:
+
+1. [cJSON](https://github.com/DaveGamble/cJSON)
+2. [wsServer](https://github.com/Theldus/wsServer)
+
+Both are precompiled in the static library `libws.a`, to compile:
+
+```
+cd c_stuff/src
+make
+```
+
+To run: 
+```
+./simulator
+```
+Use 
+
 ## Run webapp:
 
 ```
