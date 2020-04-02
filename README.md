@@ -20,7 +20,6 @@ To run:
 ```
 ./simulator
 ```
-Use 
 
 ## Run webapp:
 
