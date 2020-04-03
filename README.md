@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a collection of utilities to view and debug BipOS programs on a PC.
+This is a collection of utilities to view and debug BipOS applications on a PC.
 
 ## C libraries:
 
