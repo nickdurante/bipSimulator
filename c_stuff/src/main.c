@@ -56,16 +56,17 @@ void onmessage(int fd, const unsigned char *msg)
 
 	cJSON *type = cJSON_GetObjectItem(gesture, "action"); // type is an int
 
-	if(type->valueint == 1)	{	//click
+	if (type->valueint == 1)
+	{ //click
 
-		cJSON *x=cJSON_GetObjectItem(gesture, "x");
-		cJSON *y=cJSON_GetObjectItem(gesture, "y");
+		cJSON *x = cJSON_GetObjectItem(gesture, "x");
+		cJSON *y = cJSON_GetObjectItem(gesture, "y");
 
 		// dispatch_screen((struct gesture_ *) {type->valueint, (int) x->valueint, (int) y -> y.valueint})
 	}
-	else	// gesture
+	else // gesture
 	{
-	
+
 		// dispatch_screen((struct gesture_ *) {type->valueint, 0, 0)
 	}
 
@@ -73,7 +74,64 @@ void onmessage(int fd, const unsigned char *msg)
 
 	printf("I receive a message: %s\n", message);
 	ws_sendframe(fd, (char *)msg, true);
+}
 
+void text_out(char *text_in, int origin_x, int origin_y)
+{
+
+	cJSON *content = NULL;
+
+	cJSON *x = NULL;
+	cJSON *y = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("text_out"); //action : text_out_center
+	cJSON_AddItemToObject(message, "action", action);
+
+	content = cJSON_CreateString(text_in); // content : text_in
+	cJSON_AddItemToObject(message, "content", content);
+
+	x = cJSON_CreateNumber(origin_x); // x : X
+	cJSON_AddItemToObject(message, "x", x);
+
+	y = cJSON_CreateNumber(origin_y); // y : Y
+	cJSON_AddItemToObject(message, "y", y);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void text_out_center(char *text_in, int origin_x, int origin_y)
+{
+
+	cJSON *content = NULL;
+
+	cJSON *x = NULL;
+	cJSON *y = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("text_out_center"); //action : text_out_center
+	cJSON_AddItemToObject(message, "action", action);
+
+	content = cJSON_CreateString(text_in); // content : text_in
+	cJSON_AddItemToObject(message, "content", content);
+
+	x = cJSON_CreateNumber(origin_x); // x : X
+	cJSON_AddItemToObject(message, "x", x);
+
+	y = cJSON_CreateNumber(origin_y); // y : Y
+	cJSON_AddItemToObject(message, "y", y);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
 }
 
 void set_bg_color(long color)
@@ -89,8 +147,11 @@ void set_bg_color(long color)
 
 	cJSON *message = cJSON_CreateObject();
 
-	cJSON *isfg = cJSON_CreateNumber(0);
-	cJSON_AddItemToObject(message, "isfg", isfg);
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("set_bg_color"); //action : set_bg_color
+	cJSON_AddItemToObject(message, "action", action);
 
 	cJSON *color_field = cJSON_CreateArray();
 
@@ -102,32 +163,220 @@ void set_bg_color(long color)
 
 	blue_field = cJSON_CreateNumber(B);
 	cJSON_AddItemToArray(color_field, blue_field);
+
+	cJSON_AddItemToObject(message, "color", color_field); // color : {R, G, B}
+
 	ws_sendframe(ID_client, (char *)message, true);
 	free(message);
 }
 
-void text_out_center(char *text_in, int origin_x, int origin_y)
+void fill_screen_bg(void)
 {
-
-	cJSON *text_out = NULL;
-	cJSON *origin = NULL;
-	cJSON *x = NULL;
-	cJSON *y = NULL;
 
 	cJSON *message = cJSON_CreateObject();
 
-	text_out = cJSON_CreateString(text_in);
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
 
-	cJSON_AddItemToObject(message, "text", text_out);
+	cJSON *action = cJSON_CreateString("fill_screen_bg"); //action : fill_screen_bg
+	cJSON_AddItemToObject(message, "action", action);
 
-	origin = cJSON_CreateObject();
-	x = cJSON_CreateNumber(origin_x);
-	y = cJSON_CreateNumber(origin_y);
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
 
-	cJSON_AddItemToObject(origin, "x", x);
-	cJSON_AddItemToObject(origin, "y", y);
+void repaint_screen(void)
+{
 
-	cJSON_AddItemToObject(message, "origin", origin);
+	cJSON *message = cJSON_CreateObject();
+
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("repaint_screen"); //action : repaint_screen
+	cJSON_AddItemToObject(message, "action", action);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void repaint_screen_lines(int from_line, int to_line)
+{
+
+	cJSON *content = NULL;
+
+	cJSON *from = NULL;
+	cJSON *to = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("repaint_screen_lines"); //action : repaint_screen_lines
+	cJSON_AddItemToObject(message, "action", action);
+
+	from = cJSON_CreateNumber(from_line); // x : X
+	cJSON_AddItemToObject(message, "from", from);
+
+	to = cJSON_CreateNumber(to_line); // y : Y
+	cJSON_AddItemToObject(message, "to", to);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void draw_horizontal_line(int pos_y, int from_x, int to_x)
+{
+
+	cJSON *y = NULL;
+	cJSON *from = NULL;
+	cJSON *to = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("draw_horizontal_line"); //action : draw_horizontal_line
+	cJSON_AddItemToObject(message, "action", action);
+
+	y = cJSON_CreateNumber(pos_y); // y: Y
+	cJSON_AddItemToObject(message, "y", y);
+
+	from = cJSON_CreateNumber(from_x); // x1 : X1
+	cJSON_AddItemToObject(message, "x1", from);
+
+	to = cJSON_CreateNumber(to_x); // x2 : X2
+	cJSON_AddItemToObject(message, "x2", to);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void draw_vertical_line(int pos_x, int from_y, int to_y)
+{
+
+	cJSON *x = NULL;
+	cJSON *from = NULL;
+	cJSON *to = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("draw_vertical_line"); //action : draw_vertical_line
+	cJSON_AddItemToObject(message, "action", action);
+
+	x = cJSON_CreateNumber(pos_x); // x: X
+	cJSON_AddItemToObject(message, "x", x);
+
+	from = cJSON_CreateNumber(from_y); // y1 : Y1
+	cJSON_AddItemToObject(message, "y1", from);
+
+	to = cJSON_CreateNumber(to_y); // y2 : Y2
+	cJSON_AddItemToObject(message, "y2", to);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void draw_rect(int from_x, int from_y, int to_x, int to_y)
+{
+
+	cJSON *from_x_out = NULL;
+	cJSON *from_y_out = NULL;
+
+	cJSON *to_x_out = NULL;
+	cJSON *to_y_out = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("draw_rect"); //action : draw_rect
+	cJSON_AddItemToObject(message, "action", action);
+
+	from_x_out = cJSON_CreateNumber(from_x); // x1: X1
+	cJSON_AddItemToObject(message, "x1", from_x_out);
+
+	from_y_out = cJSON_CreateNumber(from_y); // y1 : Y1
+	cJSON_AddItemToObject(message, "y1", from_y_out);
+
+	to_x_out = cJSON_CreateNumber(from_x); // x1: X1
+	cJSON_AddItemToObject(message, "x1", to_x_out);
+
+	to_y_out = cJSON_CreateNumber(to_y); // y2 : Y2
+	cJSON_AddItemToObject(message, "y2", to_y_out);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void draw_filled_rect(int from_x, int from_y, int to_x, int to_y)
+{
+
+	cJSON *from_x_out = NULL;
+	cJSON *from_y_out = NULL;
+
+	cJSON *to_x_out = NULL;
+	cJSON *to_y_out = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("draw_filled_rect"); //action : draw_filled_rect
+	cJSON_AddItemToObject(message, "action", action);
+
+	from_x_out = cJSON_CreateNumber(from_x); // x1: X1
+	cJSON_AddItemToObject(message, "x1", from_x_out);
+
+	from_y_out = cJSON_CreateNumber(from_y); // y1 : Y1
+	cJSON_AddItemToObject(message, "y1", from_y_out);
+
+	to_x_out = cJSON_CreateNumber(from_x); // x1: X1
+	cJSON_AddItemToObject(message, "x1", to_x_out);
+
+	to_y_out = cJSON_CreateNumber(to_y); // y2 : Y2
+	cJSON_AddItemToObject(message, "y2", to_y_out);
+
+	ws_sendframe(ID_client, (char *)message, true);
+	free(message);
+}
+
+void draw_filled_rect_bg(int from_x, int from_y, int to_x, int to_y)
+{
+
+	cJSON *from_x_out = NULL;
+	cJSON *from_y_out = NULL;
+
+	cJSON *to_x_out = NULL;
+	cJSON *to_y_out = NULL;
+
+	cJSON *message = cJSON_CreateObject();
+
+	cJSON *from = cJSON_CreateString("app"); // from : app
+	cJSON_AddItemToObject(message, "from", from);
+
+	cJSON *action = cJSON_CreateString("draw_filled_rect_bg"); //action : draw_filled_rect_bg
+	cJSON_AddItemToObject(message, "action", action);
+
+	from_x_out = cJSON_CreateNumber(from_x); // x1: X1
+	cJSON_AddItemToObject(message, "x1", from_x_out);
+
+	from_y_out = cJSON_CreateNumber(from_y); // y1 : Y1
+	cJSON_AddItemToObject(message, "y1", from_y_out);
+
+	to_x_out = cJSON_CreateNumber(from_x); // x1: X1
+	cJSON_AddItemToObject(message, "x1", to_x_out);
+
+	to_y_out = cJSON_CreateNumber(to_y); // y2 : Y2
+	cJSON_AddItemToObject(message, "y2", to_y_out);
+
 	ws_sendframe(ID_client, (char *)message, true);
 	free(message);
 }
