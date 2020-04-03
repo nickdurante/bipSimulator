@@ -16,13 +16,13 @@ cd c_stuff/src
 make
 ```
 
-To run: 
+To run:
 ```
 ./simulator
 ```
 
 ## Run webapp:
-
+Open locally ```index.html``` and check that the websocket server is running on ```localhost:6789```
 
 ## Run ws socket
 
