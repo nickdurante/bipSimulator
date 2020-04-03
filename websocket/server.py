@@ -7,7 +7,7 @@ import json
 import websockets
 import serial
 
-IP = "0.0.0.0"
+IP = "localhost"
 PORT = 6789
 
 
