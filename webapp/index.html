@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>bipSimulator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>bipSimulator</title>
 </head>
 
 
@@ -12,6 +13,12 @@
   <!-- original is 176x176, scaling by 4 704x704-->
   <canvas id="bipCanvas" style="border: 1px black solid;" width="704" height="704"></canvas>
 
+  <div>
+    <button onclick="send_button_ws('2')">Swipe up</button>
+    <button onclick="send_button_ws('3')">Swipe down</button>
+    <button onclick="send_button_ws('4')">Swipe left</button>
+    <button onclick="send_button_ws('5')">Swipe right</button>
+  </div>
   <div>
     <h2>WS messages</h2>
     <div style="overflow: auto; max-height: 40rem">
@@ -22,13 +29,13 @@
   <script src="geometry.js" charset="utf-8"></script>
   <script src="ws.js" charset="utf-8"></script>
   <script>
-/*
-    draw_rectangle('green',10,  0, 0, 200, 200);
+    /*
+    draw_rectangle('#FFC742',10,  0, 0, 200, 200);
     draw_rectangle('blue',10, 300, 300, 100, 100);
     draw_filled_rectangle('red', 300,450, 100,100);
     draw_line('red', 10, 0, 0, 704, 704);
     write_text("hola mundo", 'red', 100,50);
-    */
+*/
   </script>
 
 </body>

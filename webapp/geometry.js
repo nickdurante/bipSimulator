@@ -7,9 +7,9 @@ function write_text(text, color,  x, y) {
   ctx.fillText(text, x, y);
 }
 
-function draw_rectangle(color, width, x0, y0, width, height) {
+function draw_rectangle(color, lineWidth, x0, y0, width, height) {
   ctx.beginPath();
-  ctx.lineWidth = width;
+  ctx.lineWidth = lineWidth;
   ctx.strokeStyle = color;
   ctx.rect(x0, y0, width, height);
   ctx.stroke();
