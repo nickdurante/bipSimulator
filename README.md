@@ -23,13 +23,6 @@ To run:
 
 ## Run webapp:
 
-```
-cd webapp/
-source venv/bin/activate
-python3 manage.py runserver
-```
-
-Now it is running at [http://localhost:8000/debug/](http://localhost:8000/debug/)
 
 ## Run ws socket
 
