@@ -1,1 +1,17 @@
 c_stuff/src/simulator
+c_stuff/active
+c_stuff/backgroundColour
+c_stuff/index
+c_stuff/index]
+c_stuff/index++
+c_stuff/layerArray[window-
+c_stuff/mainWind
+c_stuff/mainWindow.layerArray[top]
+c_stuff/params.refreshDelay
+c_stuff/textBox
+c_stuff/visible
+c_stuff/vp
+c_stuff/vp.active
+c_stuff/src/bipui.o
+c_stuff/src/main.o
+c_stuff/src/simulator.o

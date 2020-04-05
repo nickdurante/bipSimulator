@@ -17,7 +17,7 @@ CC=gcc
 AR=ar
 INCLUDE  = $(CURDIR)/include
 SRC      = $(CURDIR)/src
-CFLAGS   =  -Wall -Werror
+CFLAGS   =  -Wall #-Werror
 CFLAGS  +=  -I $(INCLUDE) -std=c99
 ARFLAGS  =  cru
 LIB      =  libws.a
@@ -42,4 +42,4 @@ clean:
 	@rm -f $(SRC)/sha1/*.o
 	@rm -f $(SRC)/cJSON/*.o
 	@rm -f $(SRC)/*.o
-	@rm -f $(LIB)
+	#@rm -f $(LIB)

@@ -1,5 +1,5 @@
-#ifndef __SIMULATOR__
-#define __SIMULATOR__
+#ifndef __SIMULATOR_H__
+#define __SIMULATOR_H__
 
 #define LIBBIP_VERSION "1.2"
 

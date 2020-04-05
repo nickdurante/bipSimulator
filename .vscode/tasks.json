@@ -3,7 +3,7 @@
         {
             "type": "shell",
             "label": "gcc build active file",
-            "command": "g++",
+            "command": "gcc",
             "args": [
                 //"-Wall",
                 "-I", 
@@ -17,7 +17,7 @@
                 "/home/enrico/git/bipSimulator/c_stuff/app/*.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "${workspaceFolder}/c_stuff/libws.a"
+                //"${workspaceFolder}/c_stuff/libws.a"
             ],
             "options": {
                 "cwd": "."

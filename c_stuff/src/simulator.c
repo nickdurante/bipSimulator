@@ -7,8 +7,6 @@
 
 #include <bipui.h>
 
-#define vPortFree free
-
 int ID_client;
 app_data_t *app_data_global;
 

@@ -23,7 +23,7 @@
  
 //#include "simulator.h"
 #include "buttons_test.h"
-#include <bipui.h>
+//#include <bipui.h>
 
 #define WS_PORT 6789
 
@@ -93,8 +93,6 @@ int main()
 		evs.onmessage = &onmessage;
 		ws_socket(&evs, WS_PORT);
 	}
-
-	
 
 	return 0;
 }
