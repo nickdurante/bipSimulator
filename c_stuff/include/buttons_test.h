@@ -13,6 +13,7 @@
 #include "bipui.h"
 
 // template.c
+int main_app(int param0, char **argv);
 void show_screen(void *return_screen);
 void key_press_screen();
 int dispatch_screen(void *param);

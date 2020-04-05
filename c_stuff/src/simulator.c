@@ -5,9 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <bipui.h>
+
 #define vPortFree free
 
 int ID_client;
+app_data_t *app_data_global;
 
 void exportID(int ID)
 {
@@ -467,4 +470,44 @@ int set_graph_callback_to_ram_1(void) {
 int show_watchface(void) {
 
     return 0;       // big nono, yolo
+}
+
+void set_update_period(int cmd, int period) {
+
+    cJSON *message = cJSON_CreateObject();
+
+    cJSON *from = cJSON_CreateString("app"); // from : app
+    cJSON_AddItemToObject(message, "from", from);
+
+    cJSON *action = cJSON_CreateString("set_redraw_time"); //action : set_redraw_time
+    cJSON_AddItemToObject(message, "action", action);
+
+    cJSON *time = cJSON_CreateNumber(period);
+    cJSON_AddItemToObject(message, "time", time);
+
+    cJSON *cmd = cJSON_CreateBool(cmd);
+    cJSON_AddItemToObject(message, "cmd", cmd);
+    ws_sendframe(ID_client, (char *)message, true);
+    free(message);
+}
+
+void reg_menu(void *regmenu_, int param) {
+
+    // nothing
+}
+
+int get_var_menu_overlay(void) {
+
+    return 0; // ignoring call/notification overlay for now
+}
+
+app_data_t *get_app_data_ptr(void) {
+
+    return app_data_global;
+}
+
+int set_app_data_ptr(app_data_t *app_data) {
+
+    app_data_global = app_data;
+    return 1;
 }

@@ -21,7 +21,7 @@ struct regmenu_ screen_data = {
 };
 
 #ifdef __SIMULATION__
-	int main_app(int param0, char **argv)
+int main_app(int param0, char **argv)
 	{
 #else
 int main(int param0, char **argv)
@@ -32,8 +32,9 @@ int main(int param0, char **argv)
 
 // CALLBACK FUNCTIONS - functions associated to objects i.e. buttons or layers
 
-void simpleInteractionCallbackFunction(Layer_ *layer, Button_ button, short button_id)
-{
+void simpleInteractionCallbackFunction(Layer_ *layer, short button_id)
+{	
+	Button_ button = layer->buttonArray[button_id];
 
 	set_bg_color(getLongColour(button.filling));
 	set_fg_color(getLongColour(button.text));
@@ -187,8 +188,13 @@ Layer_ *layerButtonsConstructor(app_data_t *app_data)
 
 void show_screen(void *param0)
 {
-	app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-	app_data_t *app_data;							//	pointer to screen data
+	#ifdef __SIMULATION__
+		app_data_t *app_data = get_app_data_ptr();
+		app_data_t **app_data_p = &app_data;
+	#else
+		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
+		app_data_t *app_data;							//	pointer to screen data
+	#endif
 
 	Elf_proc_ *proc;
 
@@ -226,6 +232,10 @@ void show_screen(void *param0)
 			app_data->ret_f = proc->elf_finish;
 		else //	if not, to the watchface
 			app_data->ret_f = show_watchface;
+
+		#ifdef __SIMULATION__
+			set_app_data_ptr(app_data);
+		#endif
 
 		begin(app_data);
 	}

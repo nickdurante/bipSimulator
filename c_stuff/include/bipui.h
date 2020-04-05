@@ -10,20 +10,22 @@ v.0.0
 -   unreleased
 
 *****/
+#ifndef __BIPUI__
+#define __BIPUI__
 
 #define __SIMULATION__
-
 #ifdef __SIMULATION__
     #include <simulator.h>
 #else
     #include "libbip_EN.h"
 #endif
 
-#ifndef __BIPUI__
-#define __BIPUI__
 
 // Debug defines, enable to see debug prints to screen
 
+
+
+#ifndef __SIMULATION__
 
 #define MAX_NUM_BUTTONS 8
 #define MAX_SIZE_BUTTON_LABEL 20
@@ -34,6 +36,7 @@ v.0.0
 #define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
 
 #define DEFAULT_TEXT_HEIGHT 25
+
 
 typedef struct Point_
 {
@@ -128,6 +131,13 @@ typedef struct Layer_
     void (*callbackFunction)();
 } Layer_;
 
+typedef struct Window_
+{
+
+    Layer_ layerArray[MAX_NUM_LAYERS];
+    short index;
+
+} Window_;
 typedef struct Viewport_
 {
 
@@ -139,77 +149,128 @@ typedef struct Viewport_
 
 } Viewport_;
 
-typedef struct Window_
-{
-
-    Layer_ layerArray[MAX_NUM_LAYERS];
-    short index;
-
-} Window_;
-
 typedef struct app_data_t
 {
     void *ret_f; //	the address of the return function
 
     Viewport_ vp;
 } app_data_t;
+#endif
 
 // CONSTANTS ----------------------
 
-const static Point_ BIPUI_TOP_LEFT_POINT = {
+#ifdef __cplusplus
+        const static Point_ BIPUI_TOP_LEFT_POINT = {
 
-    .x = DEFAULT_BORDER_THICKNESS,
-    .y = DEFAULT_BORDER_THICKNESS};
+        DEFAULT_BORDER_THICKNESS,
+        DEFAULT_BORDER_THICKNESS
+        };
 
-const static Point_ BIPUI_TOP_RIGHT_POINT = {
+    const static Point_ BIPUI_TOP_RIGHT_POINT = {
 
-    .x = DEFAULT_BORDER_THICKNESS,
-    .y = VIDEO_X - DEFAULT_BORDER_THICKNESS};
+        DEFAULT_BORDER_THICKNESS,
+        VIDEO_X - DEFAULT_BORDER_THICKNESS
+        };
 
-const static Point_ BIPUI_BOTTOM_LEFT_POINT = {
+    const static Point_ BIPUI_BOTTOM_LEFT_POINT = {
 
-    .x = DEFAULT_BORDER_THICKNESS,
-    .y = VIDEO_X - DEFAULT_BORDER_THICKNESS};
+        DEFAULT_BORDER_THICKNESS,
+        VIDEO_X - DEFAULT_BORDER_THICKNESS
+        };
 
-const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
+    const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
 
-    .x = VIDEO_Y - DEFAULT_BORDER_THICKNESS,
-    .y = VIDEO_X - DEFAULT_BORDER_THICKNESS};
+        VIDEO_Y - DEFAULT_BORDER_THICKNESS,
+        VIDEO_X - DEFAULT_BORDER_THICKNESS
+        };
 
-const static TextBox_ DEFAULT_TEXTBOX = {
+    const static TextBox_ DEFAULT_TEXTBOX = {
 
-    .topLeft = {10, 10},
-    .bottomRight = {VIDEO_Y - 5, VIDEO_X - 5},
+        {10, 10},
+        {VIDEO_Y - 5, VIDEO_X - 5},
 
-    .body = "TEXTBOX SAMPLE",
+        "TEXTBOX SAMPLE",
 
-    .colour = COLOR_SH_RED,
-    .background = COLOR_SH_BLACK
+        COLOR_SH_RED,
+        COLOR_SH_BLACK
+    };
 
-};
+    const static ButtonParams_ DEFAULT_BUTTON_PARAMETERS = {
 
-const static ButtonParams_ DEFAULT_BUTTON_PARAMETERS = {
+        BUTTON_STYLE_DEFAULT_SQUARED
 
-    .style = BUTTON_STYLE_DEFAULT_SQUARED
+    };
 
-};
+    const static Button_ DEFAULT_BUTTON_INSTANCE = {
 
-const static Button_ DEFAULT_BUTTON_INSTANCE = {
+        {50, 50},
+        {100, 100},
 
-    .topLeft = {50, 50},
-    .bottomRight = {100, 100},
+        "UNDEFINED",
+        COLOR_SH_WHITE,
+        COLOR_SH_PURPLE,
+        COLOR_SH_WHITE,
 
-    .label = "UNDEFINED",
-    .border = COLOR_SH_WHITE,
-    .filling = COLOR_SH_PURPLE,
-    .text = COLOR_SH_WHITE,
+        0,
 
-    .callbackFunction = 0,
+        {0}
+    };
+    
+#else
+    const static Point_ BIPUI_TOP_LEFT_POINT = {
 
-    .params = {0}
+        .x = DEFAULT_BORDER_THICKNESS,
+        .y = DEFAULT_BORDER_THICKNESS};
 
-};
+    const static Point_ BIPUI_TOP_RIGHT_POINT = {
 
+        .x = DEFAULT_BORDER_THICKNESS,
+        .y = VIDEO_X - DEFAULT_BORDER_THICKNESS};
+
+    const static Point_ BIPUI_BOTTOM_LEFT_POINT = {
+
+        .x = DEFAULT_BORDER_THICKNESS,
+        .y = VIDEO_X - DEFAULT_BORDER_THICKNESS};
+
+    const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
+
+        .x = VIDEO_Y - DEFAULT_BORDER_THICKNESS,
+        .y = VIDEO_X - DEFAULT_BORDER_THICKNESS};
+
+    const static TextBox_ DEFAULT_TEXTBOX = {
+
+        .topLeft = {10, 10},
+        .bottomRight = {VIDEO_Y - 5, VIDEO_X - 5},
+
+        .body = "TEXTBOX SAMPLE",
+
+        .colour = COLOR_SH_RED,
+        .background = COLOR_SH_BLACK
+
+    };
+
+    const static ButtonParams_ DEFAULT_BUTTON_PARAMETERS = {
+
+        .style = BUTTON_STYLE_DEFAULT_SQUARED
+
+    };
+
+    const static Button_ DEFAULT_BUTTON_INSTANCE = {
+
+        .topLeft = {50, 50},
+        .bottomRight = {100, 100},
+
+        .label = "UNDEFINED",
+        .border = COLOR_SH_WHITE,
+        .filling = COLOR_SH_PURPLE,
+        .text = COLOR_SH_WHITE,
+
+        .callbackFunction = 0,
+
+        .params = {0}
+
+    };
+#endif
 // PROTOTYPES --------------------------
 
 void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, // initialize button with these parameters

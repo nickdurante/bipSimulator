@@ -3,14 +3,15 @@
         {
             "type": "shell",
             "label": "gcc build active file",
-            "command": "gcc",
+            "command": "g++",
             "args": [
                 "-Wall",
                 "-I", 
                 "${workspaceFolder}/c_stuff/include",
                 "-I", 
                 "/usr/local/include",
-                "-std=c99", 
+                "-fpermissive",
+                //"-std=c99", 
                 "-pthread",
                 "/home/enrico/git/bipSimulator/c_stuff/src/*.c",
                 "/home/enrico/git/bipSimulator/c_stuff/app/*.c",

@@ -20,28 +20,134 @@
 #define abssub(x, y) ((x) > (y) ? (x) - (y) : (y) - (x))
 #endif
 
-#ifndef true
-#define true 1
-#endif
+#define MAX_NUM_BUTTONS 8
+#define MAX_SIZE_BUTTON_LABEL 20
+#define MAX_SIZE_TEXT_BOX 120
 
-#ifndef false
-#define false 0
-#endif
-/* 
-Type    	  Size		Alignment
-			(bytes)     (bytes)
--------------------------------------			
-char        1 byte   1 byte  
-short       2 bytes  2 bytes  
-int         4 bytes  4 bytes  
-unsigned    4 bytes  4 bytes  
-long        4 bytes  4 bytes  
-long long   8 bytes  8 bytes  
-float       4 bytes  4 bytes  
-double      8 bytes  8 bytes  
-pointer     4 bytes  4 bytes  
--------------------------------------
-*/
+#define MAX_NUM_LAYERS 2
+
+#define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
+
+#define DEFAULT_TEXT_HEIGHT 25
+
+#include <bipui.h>
+
+typedef struct Point_
+{
+
+    short x,
+        y;
+} Point_;
+
+typedef enum Caffeine_t
+{
+
+    WEAK,  // 0 - screen backlight will go off
+    STRONG // 1 - backlight always on
+
+} Caffeine_t;
+
+typedef enum Style_t
+{
+
+    BUTTON_STYLE_DEFAULT_SQUARED,
+    BUTTON_STYLE_SQUARED_NOBORDER,
+    BUTTON_STYLE_ROUNDED_NOBORDER
+
+} Style_t;
+
+typedef enum Way_
+{
+
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+
+} Way_;
+
+typedef struct ButtonParams_
+{
+    Style_t style;
+
+} ButtonParams_;
+
+typedef struct Button_
+{
+
+    Point_ topLeft,
+        bottomRight;
+
+    char label[MAX_SIZE_BUTTON_LABEL];
+
+    short border, // color of button features
+        filling,
+        text;
+
+    void (*callbackFunction)();
+
+    ButtonParams_ params; // style, state..
+
+} Button_;
+
+typedef struct TextBox_
+{
+
+    Point_ topLeft,
+        bottomRight;
+
+    char body[MAX_SIZE_TEXT_BOX];
+
+    short colour,
+        background;
+
+} TextBox_;
+
+typedef struct LayerParams_
+{
+
+    //char overlay; // 1: something was drawn on top of the layer and it should be refreshed
+    short refreshDelay;
+
+} LayerParams_;
+
+typedef struct Layer_
+{
+
+    Button_ buttonArray[MAX_NUM_BUTTONS]; // all buttons
+    unsigned short index;                 // current valid button, init=0
+
+    short backgroundColour; // background for the current Layer
+    short visible;          // is the layer visible?
+    TextBox_ textBox;       // textbox for general usage
+
+    LayerParams_ params; // holding state of the layer
+    void (*callbackFunction)();
+} Layer_;
+
+typedef struct Window_
+{
+
+    Layer_ layerArray[MAX_NUM_LAYERS];
+    short index;
+
+} Window_;
+typedef struct Viewport_
+{
+
+    Layer_ *active; // layer currently drawn
+    Layer_ *up;     // pointers to layers on all sides
+    Layer_ *down;
+    Layer_ *left;
+    Layer_ *right;
+
+} Viewport_;
+typedef struct app_data_t
+{
+    void *ret_f; //	the address of the return function
+
+    Viewport_ vp;
+} app_data_t;
 
 // screen structure
 struct regmenu_
@@ -277,8 +383,8 @@ typedef struct
 void text_out(char *text_in, int origin_x, int origin_y);
 void text_out_center(char *text_in, int origin_x, int origin_y);
 void set_bg_color(long color);
+void set_fg_color(long color);
 void fill_screen_bg(void);
-void fill_screen_fg(void);
 void repaint_screen(void);
 void repaint_screen_lines(int from_line, int to_line);
 void draw_horizontal_line(int pos_y, int from_x, int to_x);
@@ -296,5 +402,11 @@ int _strcpy(char *destptr, const char *srcptr);
 void set_display_state_value(int state_1, int state);
 int set_graph_callback_to_ram_1(void);
 int show_watchface(void);
+void set_update_period(int cmd, int period);
+void reg_menu(void *regmenu_, int param);
+int get_var_menu_overlay(void);
+
+app_data_t *get_app_data_ptr(void);
+int set_app_data_ptr(app_data_t * app_data);
 
 #endif

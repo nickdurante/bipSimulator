@@ -20,9 +20,10 @@
 #include <unistd.h>
 #include <cjson/cJSON.h>
 #include <ws.h>
-
-#include "simulator.h"
+ 
+//#include "simulator.h"
 #include "buttons_test.h"
+#include <bipui.h>
 
 #define WS_PORT 6789
 
@@ -69,9 +70,9 @@ void onmessage(int fd, const unsigned char *msg)
 		// dispatch_screen((struct gesture_ *) {type->valueint, 0, 0)
 	}
 
-	char *message = cJSON_Print(msg);
+	//char *message = cJSON_Print(msg);
 
-	printf("I receive a message: %s\n", message);
+	//printf("I receive a message: %s\n", message);
 	ws_sendframe(fd, (char *)msg, true);
 }
 
