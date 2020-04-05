@@ -1,7 +1,7 @@
 var host = "localhost";
 var port = "6789";
 
-var chatSocket = new WebSocket("ws://" + host + ":" + port);
+var simSocket = new WebSocket("ws://" + host + ":" + port);
 var action_fifo = [];
 // orange
 var bg_color = "#ffb400";
@@ -10,10 +10,10 @@ var fg_color = "#6ace96";
 
 var timerOn = true;
 
-chatSocket.onmessage = function(e) {
+simSocket.onmessage = function(e) {
+  // received message from ws
   var data = JSON.parse(e.data);
-
-
+  // message from from bip
   if (data["from"] === "app") {
     console.log(data);
     document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
@@ -115,7 +115,7 @@ function send_button_ws(id) {
     'action': id
   });
 
-  chatSocket.send(outString);
+  simSocket.send(outString);
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 
 };
@@ -131,7 +131,7 @@ function getCursorPosition(canvas, event) {
     "y": y
   });
 
-  chatSocket.send(outString);
+  simSocket.send(outString);
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 }
 
@@ -145,7 +145,7 @@ function sendRefresh() {
     'action': 'repaint_screen'
   });
   if (timerOn === true) {
-    chatSocket.send(outString);
+    simSocket.send(outString);
   }
 }
 
@@ -153,6 +153,6 @@ canvas.addEventListener('mousedown', function(e) {
   getCursorPosition(canvas, e)
 })
 
-chatSocket.onclose = function(e) {
+simSocket.onclose = function(e) {
   console.error('Closed websocket');
 };
