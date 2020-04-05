@@ -1,0 +1,31 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "gcc build active file",
+            "command": "gcc",
+            "args": [
+                "-Wall",
+                "-I", 
+                "${workspaceFolder}/c_stuff/include",
+                "-I", 
+                "/usr/local/include",
+                "-std=c99", 
+                "-pthread",
+                "/home/enrico/git/bipSimulator/c_stuff/src/*.c",
+                "/home/enrico/git/bipSimulator/c_stuff/app/*.c",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "${workspaceFolder}/c_stuff/libws.a"
+            ],
+            "options": {
+                "cwd": "."
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
