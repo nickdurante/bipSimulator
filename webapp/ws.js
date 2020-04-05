@@ -8,7 +8,7 @@ var bg_color = "#ffb400";
 //green
 var fg_color = "#6ace96";
 
-var timerOn = true;
+var timer;
 
 simSocket.onmessage = function(e) {
   // received message from ws
@@ -73,12 +73,12 @@ simSocket.onmessage = function(e) {
       }
     } else if (data["action"] === "set_redraw_time") {
       if (data["cmd"] == 1) {
-        timerOn = true;
-        console.log("Set timer to true");
-        scheduleRefresh(parseInt(data["time"]));
+
+        console.log("Start timer");
+        timer = setTimeout(sendRefresh, parseInt(data["time"]));
       } else {
         console.log("Set timer to false")
-        timerOn = false;
+        clearTimeout(timer);
       }
     } else {
       console.log("Pushing: " + data.action);
@@ -135,18 +135,13 @@ function getCursorPosition(canvas, event) {
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 }
 
-function scheduleRefresh(timeMs) {
-  setTimeout(sendRefresh, timeMs);
-}
 
 function sendRefresh() {
   var outString = JSON.stringify({
     'from': 'app',
     'action': 'repaint_screen'
   });
-  if (timerOn === true) {
     simSocket.send(outString);
-  }
 }
 
 canvas.addEventListener('mousedown', function(e) {
