@@ -11,11 +11,12 @@ var fg_color = "#6ace96";
 var timer;
 
 simSocket.onmessage = function(e) {
+  console.log("Received string: " + e.data);
   // received message from ws
   var data = JSON.parse(e.data);
   // message from from bip
   if (data["from"] === "app") {
-    console.log(data);
+    //console.log(data);
     document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
     if (data["action"] === "repaint_screen") {
 

@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <cjson/cJSON.h>
+#include "cJSON.h"
 #include <ws.h>
  
 
@@ -89,7 +89,7 @@ void *threadFunc( void *arg) {
 
 int main()
 {
-
+	
 	pthread_t  threadID;
 
 	if(pthread_create(&threadID, NULL, &threadFunc, NULL))
