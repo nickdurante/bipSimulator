@@ -8,6 +8,8 @@ var bg_color = "#ffb400";
 //green
 var fg_color = "#6ace96";
 
+var timerOn = true;
+
 chatSocket.onmessage = function(e) {
   var data = JSON.parse(e.data);
 
@@ -69,6 +71,15 @@ chatSocket.onmessage = function(e) {
 
         }
       }
+    } else if (data["action"] === "set_redraw_time") {
+      if (data["cmd"] == 1) {
+        timerOn = true;
+        console.log("Set timer to true");
+        scheduleRefresh(parseInt(data["time"]));
+      } else {
+        console.log("Set timer to false")
+        timerOn = false;
+      }
     } else {
       console.log("Pushing: " + data.action);
       if (data["action"] === "set_bg_color") {
@@ -124,6 +135,19 @@ function getCursorPosition(canvas, event) {
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 }
 
+function scheduleRefresh(timeMs) {
+  setTimeout(sendRefresh, timeMs);
+}
+
+function sendRefresh() {
+  var outString = JSON.stringify({
+    'from': 'app',
+    'action': 'repaint_screen'
+  });
+  if (timerOn === true) {
+    chatSocket.send(outString);
+  }
+}
 
 canvas.addEventListener('mousedown', function(e) {
   getCursorPosition(canvas, e)
