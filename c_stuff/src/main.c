@@ -53,8 +53,9 @@ void onmessage(int fd, const unsigned char *msg)
 {
 
 	cJSON *gesture = cJSON_Parse(msg);
-
 	cJSON *type = cJSON_GetObjectItem(gesture, "action"); // type is an int
+
+	
 
 	if (type->valueint == 1)
 	{ //click
@@ -62,17 +63,17 @@ void onmessage(int fd, const unsigned char *msg)
 		cJSON *x = cJSON_GetObjectItem(gesture, "x");
 		cJSON *y = cJSON_GetObjectItem(gesture, "y");
 
-		// dispatch_screen((struct gesture_ *) {type->valueint, (int) x->valueint, (int) y -> y.valueint})
+		dispatch_screen((struct gesture_ *) {type->valueint, (int) x->valueint, (int) y->valueint});		// NOT WORKING, need to pass pointer not value
 	}
 	else // gesture
 	{
 
-		// dispatch_screen((struct gesture_ *) {type->valueint, 0, 0)
+		dispatch_screen((struct gesture_ *) {2, 0, 0});
 	}
 
-	//char *message = cJSON_Print(msg);
+	char *string = cJSON_Print(msg);
+	printf("%s\n", string);
 
-	//printf("I receive a message: %s\n", message);
 	ws_sendframe(fd, (char *)msg, true);
 }
 
@@ -94,9 +95,12 @@ int main()
 	if(pthread_create(&threadID, NULL, &threadFunc, NULL))
 		printf("Failed to create thread");
 
+	printf("Waiting 10s for webpage to render.\n");
+	sleep(10);
+
 	main_app(0);
 
 	pthread_join(threadID, NULL);
-	
+
 	return 10;
 }
