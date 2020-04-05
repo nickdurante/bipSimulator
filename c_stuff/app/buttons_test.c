@@ -126,8 +126,8 @@ Layer_ *layerButtonsConstructor(app_data_t *app_data)
 	tempPointOne.y -= height;
 	tempPointTwo.x += width;
 
-	Layer_ layer;
-	Layer_ *tempLayer = &layer; // allocating the space for the layer
+	
+	Layer_ *tempLayer = createLayer(); // allocating the space for the layer
 	//setActiveLayerViewport(getCurrentViewport(app_data), tempLayer); // assigning this layer
 	// to the active slot of this viewport
 
@@ -135,11 +135,11 @@ Layer_ *layerButtonsConstructor(app_data_t *app_data)
 
 	TextBox_ tempText;
 
-		tempText.topLeft = BIPUI_TOP_LEFT_POINT;
-		tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
-		strcpy(tempText.body, "Tap any button");
-		tempText.colour = COLOR_SH_WHITE;
-		tempText.background = COLOR_SH_BLACK;
+	tempText.topLeft = BIPUI_TOP_LEFT_POINT;
+	tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
+	strcpy(tempText.body, "Tap any button");
+	tempText.colour = COLOR_SH_WHITE;
+	tempText.background = COLOR_SH_BLACK;
 
 	setLayerTextBox(tempLayer, tempText);
 

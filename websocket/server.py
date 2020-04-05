@@ -5,7 +5,7 @@
 import asyncio
 import json
 import websockets
-import serial
+#import serial
 
 IP = "localhost"
 PORT = 6789

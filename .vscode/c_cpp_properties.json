@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/c_stuff/**"
+                
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

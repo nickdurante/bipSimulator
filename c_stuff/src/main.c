@@ -96,5 +96,7 @@ int main()
 
 	main_app(0);
 
+	pthread_join(threadID, NULL);
+	
 	return 10;
 }
