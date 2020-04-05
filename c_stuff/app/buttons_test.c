@@ -5,7 +5,10 @@
 */
 
 #include "buttons_test.h"
-
+#ifdef __SIMULATION__
+	#include <stdio.h>
+	#include <string.h>
+#endif
 //	screen menu structure - each screen has its own
 struct regmenu_ screen_data = {
 	55,				  //	curr_screen - main screen number, value 0-255, for custom windows it is better to take from 50 and above
@@ -21,7 +24,7 @@ struct regmenu_ screen_data = {
 };
 
 #ifdef __SIMULATION__
-int main_app(int param0, char **argv)
+int main_app(int param0)
 	{
 #else
 int main(int param0, char **argv)
@@ -47,10 +50,17 @@ void simpleInteractionCallbackFunction(Layer_ *layer, short button_id)
 	tempText.colour = button.text;
 	char str[MAX_SIZE_TEXT_BOX];
 
-	_sprintf(&str, "btn_id: %d\nlabel: %s\ntopLeft: (%d, %d)\nbtmRight:(%d, %d)\n\nRefreshing in 6s\n or swipe down",
-			 button_id, button.label, button.topLeft.x, button.topLeft.y, button.bottomRight.x, button.bottomRight.y);
+	#ifdef __SIMULATION__
+		sprintf((char *)&str, "btn_id: %d\nlabel: %s\ntopLeft: (%d, %d)\nbtmRight:(%d, %d)\n\nRefreshing in 6s\n or swipe down",
+				button_id, button.label, button.topLeft.x, button.topLeft.y, button.bottomRight.x, button.bottomRight.y);
 
-	_strcpy(tempText.body, str);
+		strcpy(tempText.body, str);
+	#else
+		_sprintf(&str, "btn_id: %d\nlabel: %s\ntopLeft: (%d, %d)\nbtmRight:(%d, %d)\n\nRefreshing in 6s\n or swipe down",
+			button_id, button.label, button.topLeft.x, button.topLeft.y, button.bottomRight.x, button.bottomRight.y);
+
+		_strcpy(tempText.body, str);
+	#endif
 
 	drawTextBox(&tempText);
 
@@ -122,15 +132,13 @@ Layer_ *layerButtonsConstructor(app_data_t *app_data)
 
 	setLayerBackground(tempLayer, COLOR_SH_BLACK);
 
-	TextBox_ tempText = {
+	TextBox_ tempText;
 
-		.topLeft = BIPUI_TOP_LEFT_POINT,
-		.bottomRight = BIPUI_BOTTOM_RIGHT_POINT,
-		.body = "Tap any button",
-		.colour = COLOR_SH_WHITE,
-		.background = COLOR_SH_BLACK
-
-	};
+		tempText.topLeft = BIPUI_TOP_LEFT_POINT;
+		tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
+		strcpy(tempText.body, "Tap any button");
+		tempText.colour = COLOR_SH_WHITE;
+		tempText.background = COLOR_SH_BLACK;
 
 	setLayerTextBox(tempLayer, tempText);
 
@@ -258,9 +266,13 @@ void begin(app_data_t *app_data)
 
 void key_press_screen()
 {
-	app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-	app_data_t *app_data = *app_data_p;				//	pointer to screen data
-
+	#ifdef __SIMULATION__
+		app_data_t *app_data = get_app_data_ptr();
+		app_data_t **app_data_p = &app_data;
+	#else
+		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
+		app_data_t *app_data;							//	pointer to screen data
+	#endif
 	//destroyViewport(getCurrentViewport(app_data));
 
 	// call the return function (usually this is the start menu), specify the address of the function of our application as a parameter
@@ -269,10 +281,14 @@ void key_press_screen()
 
 void refreshScreen()
 { // periodic
-	// if necessary, you can use the screen data in this function
-	app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to pointer to screen data
-	app_data_t *app_data = *app_data_p;				//	pointer to screen data
 
+	#ifdef __SIMULATION__
+		app_data_t *app_data = get_app_data_ptr();
+		app_data_t **app_data_p = &app_data;
+	#else
+		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
+		app_data_t *app_data;							//	pointer to screen data
+	#endif
 	refreshLayer(getActiveLayer(app_data), 1);
 	vibrate(2, 50, 150);
 
@@ -280,9 +296,14 @@ void refreshScreen()
 
 int dispatch_screen(void *param)
 {
-	app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-	app_data_t *app_data = *app_data_p;				//	pointer to screen data
-
+	#ifdef __SIMULATION__
+		app_data_t *app_data = get_app_data_ptr();
+		app_data_t **app_data_p = &app_data;
+	#else
+		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
+		app_data_t *app_data;							//	pointer to screen data
+	#endif
+	
 	struct gesture_ *gest = param;
 	int result = 0;
 

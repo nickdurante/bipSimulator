@@ -485,8 +485,8 @@ void set_update_period(int cmd, int period) {
     cJSON *time = cJSON_CreateNumber(period);
     cJSON_AddItemToObject(message, "time", time);
 
-    cJSON *cmd = cJSON_CreateBool(cmd);
-    cJSON_AddItemToObject(message, "cmd", cmd);
+    cJSON *cmd_out = cJSON_CreateBool(cmd);
+    cJSON_AddItemToObject(message, "cmd", cmd_out);
     ws_sendframe(ID_client, (char *)message, true);
     free(message);
 }
@@ -510,4 +510,9 @@ int set_app_data_ptr(app_data_t *app_data) {
 
     app_data_global = app_data;
     return 1;
+}
+
+int show_menu_animate(void *show_menu_function, int param, int animate) {
+
+    exit(7);
 }

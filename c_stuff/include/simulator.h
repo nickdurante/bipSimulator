@@ -84,7 +84,7 @@ typedef struct Button_
         filling,
         text;
 
-    void (*callbackFunction)();
+    void (*callbackFunction)(void *, void *);
 
     ButtonParams_ params; // style, state..
 
@@ -408,5 +408,8 @@ int get_var_menu_overlay(void);
 
 app_data_t *get_app_data_ptr(void);
 int set_app_data_ptr(app_data_t * app_data);
+int _sprintf(char *buf, const char *format, ...);
+
+int show_menu_animate(void *show_menu_function, int param, int animate);
 
 #endif
