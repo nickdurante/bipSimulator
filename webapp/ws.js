@@ -126,7 +126,7 @@ function getCursorPosition(canvas, event) {
   const y = Math.round((event.clientY - rect.top) / 4);
   var outString = JSON.stringify({
     "from": "sim",
-    "action": "1",
+    "action": 1,
     "x": x,
     "y": y
   });
