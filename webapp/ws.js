@@ -1,17 +1,19 @@
 var host = "localhost";
 var port = "6789";
 
-var chatSocket = new WebSocket("ws://" + host + ":" + port);
+var simSocket = new WebSocket("ws://" + host + ":" + port);
 var action_fifo = [];
 // orange
 var bg_color = "#ffb400";
 //green
 var fg_color = "#6ace96";
 
-chatSocket.onmessage = function(e) {
+var timer;
+
+simSocket.onmessage = function(e) {
+  // received message from ws
   var data = JSON.parse(e.data);
-
-
+  // message from from bip
   if (data["from"] === "app") {
     console.log(data);
     document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
@@ -69,6 +71,15 @@ chatSocket.onmessage = function(e) {
 
         }
       }
+    } else if (data["action"] === "set_redraw_time") {
+      if (data["cmd"] == 1) {
+
+        console.log("Start timer");
+        timer = setTimeout(sendRefresh, parseInt(data["time"]));
+      } else {
+        console.log("Set timer to false")
+        clearTimeout(timer);
+      }
     } else {
       console.log("Pushing: " + data.action);
       if (data["action"] === "set_bg_color") {
@@ -104,7 +115,7 @@ function send_button_ws(id) {
     'action': id
   });
 
-  chatSocket.send(outString);
+  simSocket.send(outString);
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 
 };
@@ -120,15 +131,23 @@ function getCursorPosition(canvas, event) {
     "y": y
   });
 
-  chatSocket.send(outString);
+  simSocket.send(outString);
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 }
 
+
+function sendRefresh() {
+  var outString = JSON.stringify({
+    'from': 'app',
+    'action': 'repaint_screen'
+  });
+    simSocket.send(outString);
+}
 
 canvas.addEventListener('mousedown', function(e) {
   getCursorPosition(canvas, e)
 })
 
-chatSocket.onclose = function(e) {
+simSocket.onclose = function(e) {
   console.error('Closed websocket');
 };
