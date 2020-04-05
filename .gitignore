@@ -12,6 +12,5 @@ c_stuff/textBox
 c_stuff/visible
 c_stuff/vp
 c_stuff/vp.active
-c_stuff/src/bipui.o
-c_stuff/src/main.o
-c_stuff/src/simulator.o
+*.o
+

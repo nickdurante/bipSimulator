@@ -21,9 +21,9 @@
 #include <cjson/cJSON.h>
 #include <ws.h>
  
-//#include "simulator.h"
+
 #include "buttons_test.h"
-//#include <bipui.h>
+#include <pthread.h>
 
 #define WS_PORT 6789
 
@@ -76,23 +76,25 @@ void onmessage(int fd, const unsigned char *msg)
 	ws_sendframe(fd, (char *)msg, true);
 }
 
+void *threadFunc( void *arg) {
 
+	struct ws_events evs;
+	evs.onopen = &onopen;
+	evs.onclose = &onclose;
+	evs.onmessage = &onmessage;
+	ws_socket(&evs, WS_PORT);
+
+}
 
 int main()
 {
 
-	    // child process because return value zero 
-    if (fork() == 0) 
-    	main_app(0);
-  
-    // parent process because return value non-zero. 
-    else {
-        struct ws_events evs;
-		evs.onopen = &onopen;
-		evs.onclose = &onclose;
-		evs.onmessage = &onmessage;
-		ws_socket(&evs, WS_PORT);
-	}
+	pthread_t  threadID;
 
-	return 0;
+	if(pthread_create(&threadID, NULL, &threadFunc, NULL))
+		printf("Failed to create thread");
+
+	main_app(0);
+
+	return 10;
 }

@@ -42,4 +42,4 @@ clean:
 	@rm -f $(SRC)/sha1/*.o
 	@rm -f $(SRC)/cJSON/*.o
 	@rm -f $(SRC)/*.o
-	#@rm -f $(LIB)
+	@rm -f $(LIB)

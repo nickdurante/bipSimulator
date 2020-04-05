@@ -6,6 +6,7 @@
             "command": "gcc",
             "args": [
                 //"-Wall",
+                "-g",
                 "-I", 
                 "${workspaceFolder}/c_stuff/include",
                 "-I", 
@@ -17,7 +18,7 @@
                 "/home/enrico/git/bipSimulator/c_stuff/app/*.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                //"${workspaceFolder}/c_stuff/libws.a"
+                "${workspaceFolder}/c_stuff/libws.a"
             ],
             "options": {
                 "cwd": "."

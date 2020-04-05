@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "buttons_test.h": "c",
-        "cjson.h": "c"
+        "cjson.h": "c",
+        "pthread.h": "c"
     }
 }

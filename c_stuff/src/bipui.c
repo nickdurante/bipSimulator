@@ -1,4 +1,5 @@
 #include <bipui.h>
+#include <simulator.h>
 
 void blank_screen(void)
 {
