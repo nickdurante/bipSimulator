@@ -18,7 +18,8 @@ make all
 
 To run:
 ```
-cd c_stuff/src/bipsim
+cd c_stuff/src/
+./bipsim
 ```
 
 ## Run webapp:

@@ -13,4 +13,6 @@ c_stuff/textBox
 c_stuff/visible
 c_stuff/vp
 c_stuff/vp.active
+c_stuff/libws.a
+c_stuff/src/bipsim
 *.o

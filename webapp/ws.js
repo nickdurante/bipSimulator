@@ -14,7 +14,7 @@ simSocket.onmessage = function(e) {
 
   // received message from ws
   var data = JSON.parse(e.data);
-  console.log(data);
+  //console.log(data);
   // message from from bip
   if (data["from"] === "app") {
 
@@ -36,36 +36,44 @@ simSocket.onmessage = function(e) {
             break;
           case "set_bg_color":
             bg_color = rgbToHex(current_action["color"]);
+            console.log("Set bg: " + bg_color);
             break;
           case "set_fg_color":
             fg_color = rgbToHex(current_action["color"]);
+            console.log("Set fg: " + fg_color);
             break;
           case "fill_screen_bg":
+            console.log("Filling screen with: " + bg_color);
             draw_filled_rectangle(bg_color, 0, 0, 704, 704);
             break;
           case "draw_horizontal_line":
             width = '5';
+            console.log("Drawing horizontal line with: " + fg_color);
             draw_line(fg_color, width, current_action.x1 * 4, current_action.y * 4, current_action.x2 * 4, current_action.y * 4);
             break;
           case "draw_rect":
             lineWidth = '10';
             width = (current_action.x2 - current_action.x1) * 4;
             height = (current_action.y2 - current_action.y1) * 4;
+            console.log("Drawing rectangle with: " + fg_color);
             draw_rectangle(fg_color, lineWidth, current_action.x1 * 4, current_action.y1 * 4, width, height);
             break;
           case "draw_vertical_line":
             width = '10';
+            console.log("Drawing vertical line with: " + fg_color);
             draw_line(fg_color, width, current_action.x * 4, current_action.y1 * 4, current_action.x * 4, current_action.y2 * 4);
             break;
 
           case "draw_filled_rect":
             width = (current_action.x2 - current_action.x1) * 4;
             height = (current_action.y2 - current_action.y1) * 4;
+            console.log("Drawing rectangle with: " + fg_color);
             draw_filled_rectangle(fg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
             break;
           case "draw_filled_rect_bg":
             width = (current_action.x2 - current_action.x1) * 4;
             height = (current_action.y2 - current_action.y1) * 4;
+            console.log("Drawing filled rectangle with: " + bg_color);
             draw_filled_rectangle(bg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
             break;
           default:
@@ -83,15 +91,11 @@ simSocket.onmessage = function(e) {
         clearTimeout(timer);
       }
     } else {
-      console.log("Pushing: " + data.action);
-      if (data["action"] === "set_bg_color") {
-        //put at the beginning of the FIFO
-        action_fifo.unshift(JSON.stringify(data));
-      } else {
-        // put in the FIFO queue
-        action_fifo.push(JSON.stringify(data));
 
-      }
+      // put in the FIFO queue
+      action_fifo.push(JSON.stringify(data));
+
+
     }
   }
 
