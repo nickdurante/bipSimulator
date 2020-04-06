@@ -2,9 +2,9 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "gcc build active file",
-            "command": "gcc",
-            "args": [
+            "label": "make",
+            "command": "make & make clean",
+            /*"args": [
                 "-g",
                 "-I",
                 "${workspaceFolder}/c_stuff/include",
@@ -18,9 +18,9 @@
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "${workspaceFolder}/c_stuff/libws.a"
-            ],
+            ],*/
             "options": {
-                "cwd": "."
+                "cwd": "${workspaceFolder}/c_stuff/src/"
             },
             "group": {
                 "kind": "build",

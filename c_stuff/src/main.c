@@ -73,7 +73,7 @@ void onmessage(int fd, const unsigned char *msg)
 	}
 
 
-	dispatch_screen(&tempGest);
+	interactionHandler(&tempGest);
 
 }
 
