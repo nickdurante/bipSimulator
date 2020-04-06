@@ -391,7 +391,7 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label
     button->filling = filling;
     button->text = text;
     button->callbackFunction = callbackFunction;
-    button->params.style = BUTTON_STYLE_DEFAULT_SQUARED;
+    button->params.style = BUTTON_STYLE_ROUNDED_NOBORDER;
 }
 
 void drawButton(Button_ *button) // graphics of the button
