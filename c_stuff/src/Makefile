@@ -35,4 +35,7 @@ clean:
 	@rm -f $(WSDIR)/src/*.o
 	@rm -f $(WSDIR)/app/*.o
 	@rm -f $(WSDIR)/include/*.o
+	@rm -f $(WSDIR)/src/bipsim
+	@rm -f $(WSDIR)/src/main
+	@rm -f $(WSDIR)/src/simulator
 	cd $(WSDIR) && $(MAKE) clean

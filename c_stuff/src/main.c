@@ -54,27 +54,27 @@ void onmessage(int fd, const unsigned char *msg)
 
 	cJSON *gesture = cJSON_Parse(msg);
 	cJSON *type = cJSON_GetObjectItem(gesture, "action"); // type is an int
-
+	cJSON *x_out = cJSON_GetObjectItem(gesture, "x");
+	cJSON *y_out = cJSON_GetObjectItem(gesture, "y");
 	
+	struct gesture_ tempGest;
 
-	if (type->valueint == 1)
-	{ //click
+	if (type->valueint == 1) {		// tap
 
-		cJSON *x = cJSON_GetObjectItem(gesture, "x");
-		cJSON *y = cJSON_GetObjectItem(gesture, "y");
-
-		dispatch_screen((struct gesture_ *) {type->valueint, (int) x->valueint, (int) y->valueint});		// NOT WORKING, need to pass pointer not value
+		tempGest.gesture = type->valueint;
+		tempGest.touch_pos_x= x_out->valueint;
+		tempGest.touch_pos_y = y_out->valueint;
 	}
-	else // gesture
-	{
+	else {
 
-		dispatch_screen((struct gesture_ *) {2, 0, 0});
+		tempGest.gesture = type->valueint;
+		tempGest.touch_pos_x= 0;
+		tempGest.touch_pos_y = 0;
 	}
 
-	char *string = cJSON_Print(msg);
-	printf("%s\n", string);
 
-	ws_sendframe(fd, (char *)msg, true);
+	dispatch_screen(&tempGest);
+
 }
 
 void *threadFunc( void *arg) {
@@ -95,8 +95,8 @@ int main()
 	if(pthread_create(&threadID, NULL, &threadFunc, NULL))
 		printf("Failed to create thread");
 
-	printf("You have 10s to open or refresh webapp/index.html.\n");
-	sleep(10);
+	printf("You have 5s to open or refresh webapp/index.html.\n");
+	sleep(5);
 
 	main_app(0);
 

@@ -65,7 +65,8 @@ void simpleInteractionCallbackFunction(Layer_ *layer, short button_id)
 
 	drawTextBox(&tempText);
 
-	repaint_screen_lines(0, VIDEO_Y);
+	//repaint_screen_lines(0, VIDEO_Y);
+	repaint_screen();
 
 	set_update_period(1, 6000); // schedule a refresh in 6s
 }

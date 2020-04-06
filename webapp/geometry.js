@@ -1,9 +1,11 @@
 var canvas = document.getElementById("bipCanvas");
 var ctx = canvas.getContext('2d');
 
-function write_text(text, color,  x, y) {
-  ctx.font = "20px Arial";
+function write_text(text, color, x, y) {
+  ctx.font = "80px Arial";
   ctx.fillStyle = color;
+  ctx.textAlign = "center"; 
+  ctx.textBaseline = 'top';
   ctx.fillText(text, x, y);
 }
 

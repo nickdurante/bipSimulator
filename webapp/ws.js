@@ -55,14 +55,14 @@ simSocket.onmessage = function(e) {
             draw_line(fg_color, width, current_action.x1 * 4, current_action.y * 4, current_action.x2 * 4, current_action.y * 4);
             break;
           case "draw_rect":
-            lineWidth = '10';
+            lineWidth = '5';
             width = (current_action.x2 - current_action.x1) * 4;
             height = (current_action.y2 - current_action.y1) * 4;
             console.log("Drawing rectangle with: " + fg_color);
             draw_rectangle(fg_color, lineWidth, current_action.x1 * 4, current_action.y1 * 4, width, height);
             break;
           case "draw_vertical_line":
-            width = '10';
+            width = '5';
             console.log("Drawing vertical line with: " + fg_color);
             draw_line(fg_color, width, current_action.x * 4, current_action.y1 * 4, current_action.x * 4, current_action.y2 * 4);
             break;
