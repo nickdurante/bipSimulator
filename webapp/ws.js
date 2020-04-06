@@ -11,12 +11,13 @@ var fg_color = "#6ace96";
 var timer;
 
 simSocket.onmessage = function(e) {
-  console.log("Received string: " + e.data);
+
   // received message from ws
   var data = JSON.parse(e.data);
+  console.log(data);
   // message from from bip
   if (data["from"] === "app") {
-    //console.log(data);
+
     document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
     if (data["action"] === "repaint_screen") {
 
@@ -25,52 +26,52 @@ simSocket.onmessage = function(e) {
         console.log("Running:");
         console.log(current_action);
 
-        if (current_action["action"] === "text_out") {
-          write_text(current_action.content, current_action.x * 4, current_action.y * 4);
+        switch (current_action["action"]) {
+          case "text_out":
+            write_text(current_action.content, current_action.x * 4, current_action.y * 4);
+            break;
+          case "text_out_center":
+            //TODO: center text
+            write_text(current_action.content, current_action.x, current_action.y);
+            break;
+          case "set_bg_color":
+            bg_color = rgbToHex(current_action["color"]);
+            break;
+          case "set_fg_color":
+            fg_color = rgbToHex(current_action["color"]);
+            break;
+          case "fill_screen_bg":
+            draw_filled_rectangle(bg_color, 0, 0, 704, 704);
+            break;
+          case "draw_horizontal_line":
+            width = '5';
+            draw_line(fg_color, width, current_action.x1 * 4, current_action.y * 4, current_action.x2 * 4, current_action.y * 4);
+            break;
+          case "draw_rect":
+            lineWidth = '10';
+            width = (current_action.x2 - current_action.x1) * 4;
+            height = (current_action.y2 - current_action.y1) * 4;
+            draw_rectangle(fg_color, lineWidth, current_action.x1 * 4, current_action.y1 * 4, width, height);
+            break;
+          case "draw_vertical_line":
+            width = '10';
+            draw_line(fg_color, width, current_action.x * 4, current_action.y1 * 4, current_action.x * 4, current_action.y2 * 4);
+            break;
 
-        } else if (current_action["action"] === "text_out_center") {
-          //TODO: center text
-          write_text(current_action.content, current_action.x, current_action.y);
-
-        } else if (current_action["action"] === "set_bg_color") {
-          bg_color = rgbToHex(current_action["color"]);
-
-        } else if (current_action["action"] === "set_fg_color") {
-          fg_color = rgbToHex(current_action["color"]);
-
-        } else if (current_action["action"] === "fill_screen_bg") {
-          draw_filled_rectangle(bg_color, 0, 0, 704, 704);
-
-        } else if (current_action["action"] === "draw_horizontal_line") {
-          //color = 'black';
-          width = '5';
-          draw_line(fg_color, width, current_action.x1 * 4, current_action.y * 4, current_action.x2 * 4, current_action.y * 4);
-
-        } else if (current_action["action"] === "draw_rect") {
-          //color = 'red';
-          lineWidth = '10';
-          width = (current_action.x2 - current_action.x1) * 4;
-          height = (current_action.y2 - current_action.y1) * 4;
-          draw_rectangle(fg_color, lineWidth, current_action.x1 * 4, current_action.y1 * 4, width, height);
-
-        } else if (current_action["action"] === "draw_vertical_line") {
-          //color = 'black';
-          width = '10';
-          draw_line(fg_color, width, current_action.x * 4, current_action.y1 * 4, current_action.x * 4, current_action.y2 * 4);
-
-        } else if (current_action["action"] === "draw_filled_rect") {
-          //color = 'red';
-          width = (current_action.x2 - current_action.x1) * 4;
-          height = (current_action.y2 - current_action.y1) * 4;
-
-          draw_filled_rectangle(fg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
-
-        } else if (current_action["action"] === "draw_filled_rect_bg") {
-          width = (current_action.x2 - current_action.x1) * 4;
-          height = (current_action.y2 - current_action.y1) * 4;
-          draw_filled_rectangle(bg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
-
+          case "draw_filled_rect":
+            width = (current_action.x2 - current_action.x1) * 4;
+            height = (current_action.y2 - current_action.y1) * 4;
+            draw_filled_rectangle(fg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
+            break;
+          case "draw_filled_rect_bg":
+            width = (current_action.x2 - current_action.x1) * 4;
+            height = (current_action.y2 - current_action.y1) * 4;
+            draw_filled_rectangle(bg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
+            break;
+          default:
+            console.log("Unrecognized option");
         }
+
       }
     } else if (data["action"] === "set_redraw_time") {
       if (data["cmd"] == 1) {
@@ -105,7 +106,7 @@ function rgbToHex(color) {
   r = color[0];
   g = color[1];
   b = color[2];
-
+  console.log(color);
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 };
 
@@ -142,7 +143,7 @@ function sendRefresh() {
     'from': 'app',
     'action': 'repaint_screen'
   });
-    simSocket.send(outString);
+  simSocket.send(outString);
 }
 
 canvas.addEventListener('mousedown', function(e) {
