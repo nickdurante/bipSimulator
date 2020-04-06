@@ -1,4 +1,5 @@
 c_stuff/src/simulator
+c_stuff/src/main
 c_stuff/active
 c_stuff/backgroundColour
 c_stuff/index
@@ -13,4 +14,3 @@ c_stuff/visible
 c_stuff/vp
 c_stuff/vp.active
 *.o
-
