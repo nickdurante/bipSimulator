@@ -13,7 +13,7 @@
 <body>
   <div style="display:flex; flex-wrap:wrap;">
     <!-- original is 176x176, scaling by 4 704x704-->
-    <div style="flex: 70%;">
+    <div style="flex: 50%;">
       <canvas id="bipCanvas" style="border: 1px black solid;" width="704" height="704"></canvas>
       <div>
         <button onclick="send_button_ws(2)">Swipe up</button>
@@ -22,7 +22,7 @@
         <button onclick="send_button_ws(5)">Swipe right</button>
       </div>
     </div>
-    <div style="flex: 30%;">
+    <div style="flex: 50%;">
       <h2>WS messages</h2>
       <div style="overflow: auto; max-height: 40rem">
         <code id="chat-log"></code>

@@ -28,11 +28,14 @@ simSocket.onmessage = function(e) {
 
         switch (current_action["action"]) {
           case "text_out":
-            write_text(current_action.content, current_action.x * 4, current_action.y * 4);
+            console.log("Writing: " + current_action.content);
+            write_text(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
             break;
           case "text_out_center":
             //TODO: center text
-            write_text(current_action.content, current_action.x, current_action.y);
+            console.log("Writing: " + current_action.content);
+
+            write_text(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
             break;
           case "set_bg_color":
             bg_color = rgbToHex(current_action["color"]);
@@ -94,7 +97,6 @@ simSocket.onmessage = function(e) {
 
       // put in the FIFO queue
       action_fifo.push(JSON.stringify(data));
-
 
     }
   }
