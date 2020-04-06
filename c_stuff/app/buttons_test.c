@@ -15,7 +15,7 @@ struct regmenu_ screen_data = {
 	55,				  //	curr_screen - main screen number, value 0-255, for custom windows it is better to take from 50 and above
 	1,				  //	swipe_scr - auxiliary screen number (usually 1)
 	0,				  //	overlay - 0
-	dispatch_screen,  //          - pointer to the handler of interaction (touch, swipe, long press)
+	interactionHandler,  //          - pointer to the handler of interaction (touch, swipe, long press)
 	key_press_screen, //	        - handler of short button press
 	refreshScreen,	//	        - timer callback function and..
 	0,				  //	            ..the variable passed to it
@@ -71,47 +71,7 @@ void simpleInteractionCallbackFunction(Layer_ *layer, short button_id)
 	set_update_period(1, 6000); // schedule a refresh in 6s
 }
 
-/* void splashCallbackFunction(Viewport_ *vp)
-{
-
-	vp->active = vp->right;
-	refreshLayer(vp->active, 1);
-} */
-
-// CONSTRUCTORS - here layers are allocated, initialized and the pointer to them is returned
-
-/* Layer_ *layerSplashConstructor(app_data_t *app_data)
-{
-
-	Layer_ *tempLayer = createLayer(); // allocating the space for the layer
-
-	setLayerBackground(tempLayer, COLOR_SH_PURPLE);
-
-	TextBox_ tempText = {
-
-		.topLeft = BIPUI_TOP_LEFT_POINT,
-		.bottomRight = BIPUI_BOTTOM_RIGHT_POINT,
-		.body = "This is a very",
-		.colour = COLOR_SH_WHITE,
-		.background = COLOR_SH_BLACK
-
-	};
-
-	setLayerTextBox(tempLayer, tempText);
-
-	button_ placeholderButton = {// invisible button to move to next layer on tap
-								 BIPUI_TOP_LEFT_POINT,
-								 BIPUI_BOTTOM_RIGHT_POINT,
-								 "",
-								 COLOR_SH_BLACK,
-								 COLOR_SH_BLACK,
-								 COLOR_SH_WHITE,
-								 splashCallbackFunction};
-
-	addButtonToLayer(&placeholderButton, tempLayer);
-
-	return tempLayer;
-} */
+// CONSTRUCTORS - Defining elements, put the messy intializations here
 
 Layer_ *layerButtonsConstructor(app_data_t *app_data)
 {
@@ -194,7 +154,7 @@ Layer_ *layerButtonsConstructor(app_data_t *app_data)
 	return tempLayer;
 }
 
-//
+// Utility functions
 
 void show_screen(void *param0)
 {
@@ -282,7 +242,7 @@ void key_press_screen()
 };
 
 void refreshScreen()
-{ // periodic
+{ // triggered by set_update_period
 
 	#ifdef __SIMULATION__
 		app_data_t *app_data = get_app_data_ptr();
@@ -296,7 +256,7 @@ void refreshScreen()
 
 }
 
-int dispatch_screen(void *param)
+int interactionHandler(void *param)
 {
 	#ifdef __SIMULATION__
 		app_data_t *app_data = get_app_data_ptr();
@@ -308,14 +268,6 @@ int dispatch_screen(void *param)
 	
 	struct gesture_ *gest = param;
 	int result = 0;
-
-	/* if (getActiveOverlayValue(getActiveLayer(app_data)))
-	{
-		resetActiveOverlayValue(getActiveLayer(app_data));
-		vibrate(3, 50, 150);
-	}
-	else
-	{ */
 
 	switch (gest->gesture)
 	{
