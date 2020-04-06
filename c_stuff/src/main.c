@@ -95,7 +95,7 @@ int main()
 	if(pthread_create(&threadID, NULL, &threadFunc, NULL))
 		printf("Failed to create thread");
 
-	printf("Waiting 10s for webpage to render.\n");
+	printf("You have 10s to open or refresh webapp/index.html.\n");
 	sleep(10);
 
 	main_app(0);

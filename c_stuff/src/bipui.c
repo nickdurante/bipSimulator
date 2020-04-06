@@ -234,7 +234,8 @@ void refreshLayer(Layer_ *layer, short repaint)
     drawTextBox(&layer->textBox);
 
     if (repaint)
-        repaint_screen_lines(0, VIDEO_Y);
+        //repaint_screen_lines(0, VIDEO_Y);
+        repaint_screen();
 }
 
 /* Layer_ *getTopLayer(app_data_t *app_data){
@@ -390,7 +391,7 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label
     button->filling = filling;
     button->text = text;
     button->callbackFunction = callbackFunction;
-    button->params.style = BUTTON_STYLE_ROUNDED_NOBORDER;
+    button->params.style = BUTTON_STYLE_DEFAULT_SQUARED;
 }
 
 void drawButton(Button_ *button) // graphics of the button

@@ -39,7 +39,7 @@ void text_out(char *text_in, int origin_x, int origin_y)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -71,7 +71,7 @@ void text_out_center(char *text_in, int origin_x, int origin_y)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -110,7 +110,7 @@ void set_bg_color(long color)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -149,7 +149,7 @@ void set_fg_color(long color)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -168,7 +168,7 @@ void fill_screen_bg(void)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -186,7 +186,7 @@ void repaint_screen(void)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -215,7 +215,7 @@ void repaint_screen_lines(int from_line, int to_line)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -246,7 +246,7 @@ void draw_horizontal_line(int pos_y, int from_x, int to_x)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -277,7 +277,7 @@ void draw_vertical_line(int pos_x, int from_y, int to_y)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -313,7 +313,7 @@ void draw_rect(int from_x, int from_y, int to_x, int to_y)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -349,7 +349,7 @@ void draw_filled_rect(int from_x, int from_y, int to_x, int to_y)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -385,7 +385,7 @@ void draw_filled_rect_bg(int from_x, int from_y, int to_x, int to_y)
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
@@ -518,7 +518,7 @@ void set_update_period(int cmd, int period) {
         char *string = cJSON_Print(message);
     printf("%s\n", string);
     
-    ws_sendframe(ID_client, (char *)message, true);
+    ws_sendframe(ID_client, (char *)string, true);
     free(message);
 }
 
