@@ -17,3 +17,5 @@ c_stuff/libws.a
 c_stuff/src/bipsim
 *.o
 c_stuff/src/bipsim
+c_stuff/libws.a
+c_stuff/app/buttons_test
