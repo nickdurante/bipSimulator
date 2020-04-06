@@ -305,7 +305,7 @@ void draw_rect(int from_x, int from_y, int to_x, int to_y)
     cJSON_AddItemToObject(message, "y1", from_y_out);
 
     to_x_out = cJSON_CreateNumber(from_x); // x1: X1
-    cJSON_AddItemToObject(message, "x1", to_x_out);
+    cJSON_AddItemToObject(message, "x2", to_x_out);
 
     to_y_out = cJSON_CreateNumber(to_y); // y2 : Y2
     cJSON_AddItemToObject(message, "y2", to_y_out);
@@ -341,7 +341,7 @@ void draw_filled_rect(int from_x, int from_y, int to_x, int to_y)
     cJSON_AddItemToObject(message, "y1", from_y_out);
 
     to_x_out = cJSON_CreateNumber(from_x); // x1: X1
-    cJSON_AddItemToObject(message, "x1", to_x_out);
+    cJSON_AddItemToObject(message, "x2", to_x_out);
 
     to_y_out = cJSON_CreateNumber(to_y); // y2 : Y2
     cJSON_AddItemToObject(message, "y2", to_y_out);
@@ -377,7 +377,7 @@ void draw_filled_rect_bg(int from_x, int from_y, int to_x, int to_y)
     cJSON_AddItemToObject(message, "y1", from_y_out);
 
     to_x_out = cJSON_CreateNumber(from_x); // x1: X1
-    cJSON_AddItemToObject(message, "x1", to_x_out);
+    cJSON_AddItemToObject(message, "x2", to_x_out);
 
     to_y_out = cJSON_CreateNumber(to_y); // y2 : Y2
     cJSON_AddItemToObject(message, "y2", to_y_out);

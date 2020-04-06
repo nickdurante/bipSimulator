@@ -32,5 +32,7 @@ bipsim:
 	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o bipsim $(LIB)
 
 clean:
-	@rm -f simulator
+	@rm -f $(WSDIR)/src/*.o
+	@rm -f $(WSDIR)/app/*.o
+	@rm -f $(WSDIR)/include/*.o
 	cd $(WSDIR) && $(MAKE) clean
