@@ -13,12 +13,12 @@ Both are precompiled in the static library `libws.a`, to compile:
 
 ```
 cd c_stuff/src
-make
+make all
 ```
 
 To run:
 ```
-./simulator
+cd c_stuff/src/bipsim
 ```
 
 ## Run webapp:

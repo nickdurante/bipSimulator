@@ -16,14 +16,20 @@
 CC=gcc
 WSDIR    = $(CURDIR)/../
 INCLUDE  = -I $(WSDIR)/include -I /usr/local/include
-CFLAGS   =  -Wall
-CFLAGS  +=  $(INCLUDE) -std=c99 -pthread
-LIB      =  $(WSDIR)/libws.a
+CFLAGS   = -g 
+CFLAGS  += $(INCLUDE) -std=c99 -pthread
+LIB      = $(WSDIR)/libws.a
+SOURCES  = $(WSDIR)/src/*.c
+SOURCES += $(WSDIR)/app/*.c
 
-all:  main
 
-main:
-	$(CC) $(CFLAGS) $(LDFLAGS) *.c -o simulator $(LIB)
+all: libws bipsim
+
+libws:
+	cd $(WSDIR) && $(MAKE) all
+
+bipsim:
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o bipsim $(LIB)
 
 clean:
 	@rm -f simulator
