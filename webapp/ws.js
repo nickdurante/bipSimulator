@@ -35,7 +35,7 @@ simSocket.onmessage = function(e) {
             //TODO: center text
             console.log("Writing: " + current_action.content);
 
-            write_text(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
+            write_text_center(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
             break;
           case "set_bg_color":
             bg_color = rgbToHex(current_action["color"]);

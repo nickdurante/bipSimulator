@@ -4,9 +4,24 @@ var ctx = canvas.getContext('2d');
 function write_text(text, color, x, y) {
   ctx.font = "80px Arial";
   ctx.fillStyle = color;
-  ctx.textAlign = "center"; 
   ctx.textBaseline = 'top';
-  ctx.fillText(text, x, y);
+  var lineheight = 70;
+  var lines = text.split('\n');
+  for (var i = 0; i<lines.length; i++)
+      ctx.fillText(lines[i], x, y + (i*lineheight) );
+
+}
+
+function write_text_center(text, color, x, y) {
+  ctx.font = "80px Arial";
+  ctx.fillStyle = color;
+  ctx.textAlign = "center";
+  ctx.textBaseline = 'top';
+  var lineheight = 70;
+  var lines = text.split('\n');
+  for (var i = 0; i<lines.length; i++)
+      ctx.fillText(lines[i], x, y + (i*lineheight) );
+
 }
 
 function draw_rectangle(color, lineWidth, x0, y0, width, height) {
