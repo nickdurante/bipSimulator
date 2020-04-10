@@ -64,11 +64,14 @@ void onmessage(int fd, const unsigned char *msg)
 		tempGest.touch_pos_x= x_out->valueint;
 		tempGest.touch_pos_y = y_out->valueint;
 	}
-	else {
+	else if (type->valueint > 1 && type->valueint < 6) {
 
 		tempGest.gesture = type->valueint;
 		tempGest.touch_pos_x= 0;
 		tempGest.touch_pos_y = 0;
+	} else {
+
+		exit(9);	//invalid message
 	}
 
 
