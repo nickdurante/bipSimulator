@@ -18,15 +18,12 @@ v.0.0
 #define __BIPUI_H__
 
 #define __SIMULATION__
+
 #ifdef __SIMULATION__
     #include <simulator.h>
 #else
     #include "libbip_EN.h"
 #endif
-
-
-// Debug defines, enable to see debug prints to screen
-
 
 
 #ifndef __SIMULATION__

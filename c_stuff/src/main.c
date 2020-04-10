@@ -27,8 +27,6 @@
 
 #define WS_PORT 6789
 
-#define __SIMULATION__
-
 int connected = 0;
 
 void onopen(int fd)

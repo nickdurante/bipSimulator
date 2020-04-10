@@ -30,6 +30,8 @@
 
 #define DEFAULT_TEXT_HEIGHT 25
 
+#define __SIMULATION__
+
 #include <bipui.h>
 
 typedef struct Point_
