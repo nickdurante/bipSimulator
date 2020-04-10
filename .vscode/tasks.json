@@ -3,7 +3,7 @@
         {
             "type": "shell",
             "label": "make",
-            "command": "make & make clean",
+            "command": "make clean && make",
             /*"args": [
                 "-g",
                 "-I",

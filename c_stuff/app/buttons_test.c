@@ -10,6 +10,7 @@
 	#include <stdio.h>
 	#include <string.h>
 #endif
+
 //	screen menu structure - each screen has its own
 struct regmenu_ screen_data = {
 	55,				  //	curr_screen - main screen number, value 0-255, for custom windows it is better to take from 50 and above
@@ -98,7 +99,7 @@ Layer_ *layerButtonsConstructor(app_data_t *app_data)
 
 	tempText.topLeft = BIPUI_TOP_LEFT_POINT;
 	tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
-	strcpy(tempText.body, "Tap any button");
+	_strcpy(tempText.body, "Tap any button");
 	tempText.colour = COLOR_SH_WHITE;
 	tempText.background = COLOR_SH_BLACK;
 
@@ -233,7 +234,7 @@ void key_press_screen()
 		app_data_t **app_data_p = &app_data;
 	#else
 		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-		app_data_t *app_data;							//	pointer to screen data
+		app_data_t *app_data = *app_data_p;							//	pointer to screen data
 	#endif
 	//destroyViewport(getCurrentViewport(app_data));
 
@@ -249,7 +250,7 @@ void refreshScreen()
 		app_data_t **app_data_p = &app_data;
 	#else
 		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-		app_data_t *app_data;							//	pointer to screen data
+		app_data_t *app_data = *app_data_p;							//	pointer to screen data
 	#endif
 	refreshLayer(getActiveLayer(app_data), 1);
 	vibrate(2, 50, 150);
@@ -263,7 +264,7 @@ int interactionHandler(void *param)
 		app_data_t **app_data_p = &app_data;
 	#else
 		app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-		app_data_t *app_data;							//	pointer to screen data
+		app_data_t *app_data = *app_data_p;							//	pointer to screen data
 	#endif
 	
 	struct gesture_ *gest = param;
@@ -273,8 +274,8 @@ int interactionHandler(void *param)
 	{
 	case GESTURE_CLICK:
 	{
+		vibrate(1, 50, 0);
 		processTap(getActiveLayer(app_data), gest->touch_pos_x, gest->touch_pos_y);
-
 		break;
 	};
 	case GESTURE_SWIPE_RIGHT:

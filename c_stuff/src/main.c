@@ -29,12 +29,13 @@
 
 #define __SIMULATION__
 
-int ID_client;
+int connected = 0;
 
 void onopen(int fd)
 {
 	char *cli;
-	ID_client = fd;
+	setClientID(fd);
+	connected = 1;
 
 	cli = ws_getaddress(fd);
 	printf("Connection opened, client: %d | addr: %s\n", fd, cli);
@@ -95,8 +96,11 @@ int main()
 	if(pthread_create(&threadID, NULL, &threadFunc, NULL))
 		printf("Failed to create thread");
 
-	printf("You have 5s to open or refresh webapp/index.html.\n");
-	sleep(5);
+	printf("Open or refresh webapp/index.html.\n");
+
+	do {
+		sleep(1);
+	} while(!connected);
 
 	main_app(0);
 
