@@ -23,18 +23,19 @@ cd c_stuff/src/
 ```
 
 ## Run webapp:
-Open locally ```index.html``` and check that the websocket server is running on ```localhost:6789```
+Open locally ```webapp/index.html``` and check that the websocket server is running on ```localhost:6789```
 
-## Run ws socket
+## Debug
 
+### Run python ws server
 ```
-cd websocket/
+cd python_ws_test/
 python3 server.py
 ```
 
-## Send a message to ws socket
+### Send a message to ws
 
 ```
-cd websocket/
+cd python_ws_test/
 python3 send_message.py '{"type": "message", "content": "rocknroll"}'
 ```
