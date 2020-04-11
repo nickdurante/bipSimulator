@@ -20,75 +20,12 @@ simSocket.onmessage = function(e) {
 
     document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
     if (data["action"] === "repaint_screen") {
-
-      while ((current_action_str = action_fifo.shift()) !== undefined) {
-        current_action = JSON.parse(current_action_str);
-        console.log("Running:");
-        console.log(current_action);
-
-        switch (current_action["action"]) {
-          case "text_out":
-            console.log("Writing: " + current_action.content);
-            write_text(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
-            break;
-          case "text_out_center":
-            //TODO: center text
-            console.log("Writing: " + current_action.content);
-
-            write_text_center(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
-            break;
-          case "set_bg_color":
-            bg_color = rgbToHex(current_action["color"]);
-            console.log("Set bg: " + bg_color);
-            break;
-          case "set_fg_color":
-            fg_color = rgbToHex(current_action["color"]);
-            console.log("Set fg: " + fg_color);
-            break;
-          case "fill_screen_bg":
-            console.log("Filling screen with: " + bg_color);
-            draw_filled_rectangle(bg_color, 0, 0, 704, 704);
-            break;
-          case "draw_horizontal_line":
-            width = '5';
-            console.log("Drawing horizontal line with: " + fg_color);
-            draw_line(fg_color, width, current_action.x1 * 4, current_action.y * 4, current_action.x2 * 4, current_action.y * 4);
-            break;
-          case "draw_rect":
-            lineWidth = '5';
-            width = (current_action.x2 - current_action.x1) * 4;
-            height = (current_action.y2 - current_action.y1) * 4;
-            console.log("Drawing rectangle with: " + fg_color);
-            draw_rectangle(fg_color, lineWidth, current_action.x1 * 4, current_action.y1 * 4, width, height);
-            break;
-          case "draw_vertical_line":
-            width = '5';
-            console.log("Drawing vertical line with: " + fg_color);
-            draw_line(fg_color, width, current_action.x * 4, current_action.y1 * 4, current_action.x * 4, current_action.y2 * 4);
-            break;
-
-          case "draw_filled_rect":
-            width = (current_action.x2 - current_action.x1) * 4;
-            height = (current_action.y2 - current_action.y1) * 4;
-            console.log("Drawing rectangle with: " + fg_color);
-            draw_filled_rectangle(fg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
-            break;
-          case "draw_filled_rect_bg":
-            width = (current_action.x2 - current_action.x1) * 4;
-            height = (current_action.y2 - current_action.y1) * 4;
-            console.log("Drawing filled rectangle with: " + bg_color);
-            draw_filled_rectangle(bg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
-            break;
-          default:
-            console.log("Unrecognized option");
-        }
-
-      }
+        run_action_fifo();
     } else if (data["action"] === "set_redraw_time") {
       if (data["cmd"] == 1) {
 
         console.log("Start timer");
-        timer = setTimeout(sendRefresh, parseInt(data["time"]));
+        timer = setTimeout(run_action_fifo, parseInt(data["time"]));
       } else {
         console.log("Set timer to false")
         clearTimeout(timer);
@@ -102,6 +39,74 @@ simSocket.onmessage = function(e) {
   }
 
 };
+
+
+function run_action_fifo() {
+  while ((current_action_str = action_fifo.shift()) !== undefined) {
+    current_action = JSON.parse(current_action_str);
+    console.log("Running:");
+    console.log(current_action);
+
+    switch (current_action["action"]) {
+      case "text_out":
+        console.log("Writing: " + current_action.content);
+        write_text(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
+        break;
+      case "text_out_center":
+        //TODO: center text
+        console.log("Writing: " + current_action.content);
+
+        write_text_center(current_action.content, fg_color, current_action.x * 4, current_action.y * 4);
+        break;
+      case "set_bg_color":
+        bg_color = rgbToHex(current_action["color"]);
+        console.log("Set bg: " + bg_color);
+        break;
+      case "set_fg_color":
+        fg_color = rgbToHex(current_action["color"]);
+        console.log("Set fg: " + fg_color);
+        break;
+      case "fill_screen_bg":
+        console.log("Filling screen with: " + bg_color);
+        draw_filled_rectangle(bg_color, 0, 0, 704, 704);
+        break;
+      case "draw_horizontal_line":
+        width = '5';
+        console.log("Drawing horizontal line with: " + fg_color);
+        draw_line(fg_color, width, current_action.x1 * 4, current_action.y * 4, current_action.x2 * 4, current_action.y * 4);
+        break;
+      case "draw_rect":
+        lineWidth = '5';
+        width = (current_action.x2 - current_action.x1) * 4;
+        height = (current_action.y2 - current_action.y1) * 4;
+        console.log("Drawing rectangle with: " + fg_color);
+        draw_rectangle(fg_color, lineWidth, current_action.x1 * 4, current_action.y1 * 4, width, height);
+        break;
+      case "draw_vertical_line":
+        width = '5';
+        console.log("Drawing vertical line with: " + fg_color);
+        draw_line(fg_color, width, current_action.x * 4, current_action.y1 * 4, current_action.x * 4, current_action.y2 * 4);
+        break;
+
+      case "draw_filled_rect":
+        width = (current_action.x2 - current_action.x1) * 4;
+        height = (current_action.y2 - current_action.y1) * 4;
+        console.log("Drawing rectangle with: " + fg_color);
+        draw_filled_rectangle(fg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
+        break;
+      case "draw_filled_rect_bg":
+        width = (current_action.x2 - current_action.x1) * 4;
+        height = (current_action.y2 - current_action.y1) * 4;
+        console.log("Drawing filled rectangle with: " + bg_color);
+        draw_filled_rectangle(bg_color, current_action.x1 * 4, current_action.y1 * 4, width, height);
+        break;
+      default:
+        console.log("Unrecognized option");
+    }
+
+  }
+}
+
 
 function componentToHex(c) {
   var hex = c.toString(16);
@@ -143,14 +148,6 @@ function getCursorPosition(canvas, event) {
   document.getElementById("chat-log").innerHTML += outString + "<br>";
 }
 
-
-function sendRefresh() {
-  var outString = JSON.stringify({
-    'from': 'app',
-    'action': 'repaint_screen'
-  });
-  simSocket.send(outString);
-}
 
 canvas.addEventListener('mousedown', function(e) {
   getCursorPosition(canvas, e)
