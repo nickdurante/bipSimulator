@@ -22,7 +22,7 @@
 #include <ws.h>
  
 
-#include "buttons_test.h"
+#include "bipos-reactGame.h"
 #include <pthread.h>
 
 #define WS_PORT 6789

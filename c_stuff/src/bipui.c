@@ -17,13 +17,7 @@ Viewport_ *getCurrentViewport(app_data_t *app_data)
     return &app_data->vp;
 }
 
-void setActiveLayerViewport(Viewport_ *vp, Layer_ *layer)
-{
-
-    vp->active = layer;
-}
-
-void setViewportLayer(Viewport_ *vp, Layer_ *layer, Way_ dir)
+/* void setViewportLayer(Viewport_ *vp, Layer_ *layer, Way_ dir)
 {
 
     switch (dir)
@@ -54,9 +48,9 @@ void setViewportLayer(Viewport_ *vp, Layer_ *layer, Way_ dir)
         // touch wood
     };
     }
-}
+} */
 
-void destroyViewport(Viewport_ *vp)
+/* void destroyViewport(Viewport_ *vp)
 {
 
     //vPortFree(vp);
@@ -82,7 +76,7 @@ void initializeViewport(Viewport_ *vp)
 {
 
     initializeLayer(vp->active);
-}
+} */
 
 void initializeWindow(Window_ *window)
 {
@@ -98,12 +92,11 @@ void drawTextBox(TextBox_ *box)
 
     text_out_center(box->body,                                      // the text
                     (int)(box->topLeft.x + box->bottomRight.x) / 2, // median
-                    (int)box->topLeft.y - 2);                           // slightly up
+                    (int)box->topLeft.y - 2);                       // slightly up
 }
 
 void refreshWindow(Window_ *window)
 {
-
     short i;
     for (i = findHighestOpaqueLayer(window); i <= window->index; i++)
         refreshLayer(&window->layerArray[i], 0); // do not repaint since we're drawing more stuff on top of this layer
@@ -112,7 +105,7 @@ void refreshWindow(Window_ *window)
     repaint_screen_lines(0, VIDEO_Y);
 }
 
-void spawnLayer(Layer_ *layer, Window_ *window)
+/* void spawnLayer(Layer_ *layer, Window_ *window)
 {
 
     if (!addLayerToWindow(layer, window))
@@ -120,23 +113,44 @@ void spawnLayer(Layer_ *layer, Window_ *window)
 
         initializeLayer(layer);
     }
+} */
+
+short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
+{
+
+    if (window->index == -1)
+    {
+        //window full
+        printErrorText("NO LAYERS");
+        return 1;
+    }
+    else
+    {
+        destroyLayer(window->layerArray[window->index]); // free layer memory
+
+        window->index--;
+        return 0;
+    }
 }
 
-short addLayerToWindow(Layer_ *layer, Window_ *window)
+Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
 {
+
+    Layer_ *layer;
 
     if (window->index >= MAX_NUM_LAYERS)
     {
         //window full
         printErrorText("WINDOW FULL");
-        return 1;
+        
     }
     else
-    { // add layer to window - aka replacing the pointer to the layer with ours
+    { // add layer to window - aka putting layer pointer in layer array
         window->index++;
-        window->layerArray[window->index] = *layer;
+        window->layerArray[window->index] = createLayer(); //malloc layer
+        layer = &window->layerArray[window->index];         // assigning pointer to variable
 
-        return 0;
+        return layer;
     }
 }
 
@@ -169,9 +183,10 @@ short findHighestOpaqueLayer(Window_ *window)
 {
 
     short highest = 0;
-    for (short i = 0; i <= window->index; i++)
+    short i = 0;
+    for (i = 0; i < window->index; i++)
     {
-        if (window->layerArray[i].backgroundColour != COLOR_SH_MASK)
+        if (window->layerArray[i]->backgroundColour != COLOR_SH_MASK)
             highest = i;
     }
 
@@ -217,7 +232,11 @@ Layer_ *createLayer(void)
 void destroyLayer(Layer_ *layer)
 {
 
-    //vPortFree(layer);
+#ifdef __SIMULATION__
+    free(layer);
+#else
+    vPortFree(layer);
+#endif
 }
 
 void refreshLayer(Layer_ *layer, short repaint)
@@ -250,10 +269,42 @@ void refreshLayer(Layer_ *layer, short repaint)
     return &app_data->mainWindow.layerArray[top];
 } */
 
-Layer_ *getActiveLayer(app_data_t *app_data)
+Window_ *getActiveWindow(Viewport_ *vp)
 {
 
-    return app_data->vp.active;
+    switch (vp->active)
+    {
+
+    case UP:
+
+        return &vp->up;
+        break;
+
+    case DOWN:
+
+        return &vp->down;
+        break;
+
+    case LEFT:
+
+        return &vp->left;
+        break;
+
+    case RIGHT:
+
+        return &vp->right;
+        break;
+
+    case CENTER:
+
+        return &vp->center;
+        break;
+
+    default:
+    {
+        // touch wood
+    };
+    };
 }
 
 Button_ mirrorInDirectionButton(Button_ *button, Way_ dir)
@@ -297,12 +348,13 @@ Button_ mirrorInDirectionButton(Button_ *button, Way_ dir)
     return temp;
 }
 
-Button_ moveInDirectionButton(Button_ *button, Way_ dir, short separation)
+void moveInDirectionButton(Button_ *button, Way_ dir, short separation)
 {
 
-    Button_ temp = *button;
-    short width = (short)abssub(temp.topLeft.x, temp.bottomRight.x);  // considering the case when (a,b) is the bottom right point and
-    short height = (short)abssub(temp.topLeft.y, temp.bottomRight.y); //      not the top left
+    //Button_ temp = *button;
+
+    short width = (short)abssub(button->topLeft.x, button->bottomRight.x);  // considering the case when (a,b) is the bottom right point and
+    short height = (short)abssub(button->topLeft.y, button->bottomRight.y); //      not the top left
 
     // a = x1, b = y1, c = x2, d = y2
 
@@ -311,26 +363,26 @@ Button_ moveInDirectionButton(Button_ *button, Way_ dir, short separation)
 
     case UP:
 
-        temp.topLeft.y -= (height + separation);
-        temp.bottomRight.y -= (height + separation);
+        button->topLeft.y -= (height + separation);
+        button->bottomRight.y -= (height + separation);
         break;
 
     case DOWN:
 
-        temp.topLeft.y += (height + separation);
-        temp.bottomRight.y += (height + separation);
+        button->topLeft.y += (height + separation);
+        button->bottomRight.y += (height + separation);
         break;
 
     case LEFT:
 
-        temp.topLeft.x -= (width + separation);
-        temp.bottomRight.x -= (width + separation);
+        button->topLeft.x -= (width + separation);
+        button->bottomRight.x -= (width + separation);
         break;
 
     case RIGHT:
 
-        temp.topLeft.x += (width + separation);
-        temp.bottomRight.x += (width + separation);
+        button->topLeft.x += (width + separation);
+        button->bottomRight.x += (width + separation);
         break;
 
     default:
@@ -339,22 +391,22 @@ Button_ moveInDirectionButton(Button_ *button, Way_ dir, short separation)
     };
     };
 
-    if (temp.topLeft.x < 0) // display manager will freak out and hang when called with
-        temp.topLeft.x = 0; //       negative values, so this limits the max range
+    if (button->topLeft.x < 0) // display manager will freak out and hang when called with
+        button->topLeft.x = 0; //       negative values, so this limits the max range
 
-    if (temp.topLeft.y < 0)
-        temp.topLeft.y = 0;
+    if (button->topLeft.y < 0)
+        button->topLeft.y = 0;
 
-    if (temp.bottomRight.x < 0)
-        temp.bottomRight.x = 0;
+    if (button->bottomRight.x < 0)
+        button->bottomRight.x = 0;
 
-    if (temp.bottomRight.y < 0)
-        temp.bottomRight.y = 0;
+    if (button->bottomRight.y < 0)
+        button->bottomRight.y = 0;
 
-    return temp;
+    //return temp;
 }
 
-void spawnButton(Button_ *button, Layer_ *layer)
+/* void spawnButton(Button_ *button, Layer_ *layer)
 {
 
     if (!addButtonToLayer(button, layer))
@@ -362,9 +414,9 @@ void spawnButton(Button_ *button, Layer_ *layer)
 
         drawButton(button);
     }
-}
+} */
 
-short addButtonToLayer(Button_ *button, Layer_ *layer)
+short addButtonToLayer(Button_ button, Layer_ *layer)
 {
 
     if (layer->index >= MAX_NUM_BUTTONS)
@@ -375,7 +427,7 @@ short addButtonToLayer(Button_ *button, Layer_ *layer)
     }
     else
     { // add button to layer
-        layer->buttonArray[layer->index] = *button;
+        layer->buttonArray[layer->index] = button;
         layer->index++;
         return 0;
     }
@@ -394,7 +446,7 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label
     button->filling = filling;
     button->text = text;
     button->callbackFunction = callbackFunction;
-    button->params.style = BUTTON_STYLE_DEFAULT_SQUARED;
+    button->params.style = BUTTON_STYLE_ROUNDED_NOBORDER;
 }
 
 void drawButton(Button_ *button) // graphics of the button
@@ -515,6 +567,12 @@ short getLayerBackground(Layer_ *layer)
 {
 
     return layer->backgroundColour;
+}
+
+void setActiveWindowViewport(Viewport_ *vp, Way_ way)
+{ // sets the active window
+
+    vp->active = way;
 }
 
 /* void setActiveOverlayValue(Layer_ *layer)

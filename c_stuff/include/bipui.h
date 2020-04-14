@@ -13,18 +13,16 @@ v.0.0
 
 *****/
 
-
 #ifndef __BIPUI_H__
 #define __BIPUI_H__
 
 #define __SIMULATION__
 
 #ifdef __SIMULATION__
-    #include <simulator.h>
+#include <simulator.h>
 #else
-    #include "libbip_EN.h"
+#include "libbip_EN.h"
 #endif
-
 
 #ifndef __SIMULATION__
 
@@ -37,7 +35,6 @@ v.0.0
 #define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
 
 #define DEFAULT_TEXT_HEIGHT 25
-
 
 typedef struct Point_
 {
@@ -161,62 +158,56 @@ typedef struct app_data_t
 // CONSTANTS ----------------------
 
 //#ifdef __cplusplus
-        const static Point_ BIPUI_TOP_LEFT_POINT = {
+const static Point_ BIPUI_TOP_LEFT_POINT = {
 
-        DEFAULT_BORDER_THICKNESS,
-        DEFAULT_BORDER_THICKNESS
-        };
+    DEFAULT_BORDER_THICKNESS,
+    DEFAULT_BORDER_THICKNESS};
 
-    const static Point_ BIPUI_TOP_RIGHT_POINT = {
+const static Point_ BIPUI_TOP_RIGHT_POINT = {
 
-        DEFAULT_BORDER_THICKNESS,
-        VIDEO_X - DEFAULT_BORDER_THICKNESS
-        };
+    DEFAULT_BORDER_THICKNESS,
+    VIDEO_X - DEFAULT_BORDER_THICKNESS};
 
-    const static Point_ BIPUI_BOTTOM_LEFT_POINT = {
+const static Point_ BIPUI_BOTTOM_LEFT_POINT = {
 
-        DEFAULT_BORDER_THICKNESS,
-        VIDEO_X - DEFAULT_BORDER_THICKNESS
-        };
+    DEFAULT_BORDER_THICKNESS,
+    VIDEO_X - DEFAULT_BORDER_THICKNESS};
 
-    const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
+const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
 
-        VIDEO_Y - DEFAULT_BORDER_THICKNESS,
-        VIDEO_X - DEFAULT_BORDER_THICKNESS
-        };
+    VIDEO_Y - DEFAULT_BORDER_THICKNESS,
+    VIDEO_X - DEFAULT_BORDER_THICKNESS};
 
-    const static TextBox_ DEFAULT_TEXTBOX = {
+const static TextBox_ DEFAULT_TEXTBOX = {
 
-        {10, 10},
-        {VIDEO_Y - 5, VIDEO_X - 5},
+    {10, 10},
+    {VIDEO_Y - 5, VIDEO_X - 5},
 
-        "TEXTBOX SAMPLE",
+    "TEXTBOX SAMPLE",
 
-        COLOR_SH_RED,
-        COLOR_SH_BLACK
-    };
+    COLOR_SH_RED,
+    COLOR_SH_BLACK};
 
-    const static ButtonParams_ DEFAULT_BUTTON_PARAMETERS = {
+const static ButtonParams_ DEFAULT_BUTTON_PARAMETERS = {
 
-        BUTTON_STYLE_DEFAULT_SQUARED
+    BUTTON_STYLE_DEFAULT_SQUARED
 
-    };
+};
 
-    const static Button_ DEFAULT_BUTTON_INSTANCE = {
+const static Button_ DEFAULT_BUTTON_INSTANCE = {
 
-        {50, 50},
-        {100, 100},
+    {50, 50},
+    {100, 100},
 
-        "UNDEFINED",
-        COLOR_SH_WHITE,
-        COLOR_SH_PURPLE,
-        COLOR_SH_WHITE,
+    "UNDEFINED",
+    COLOR_SH_WHITE,
+    COLOR_SH_PURPLE,
+    COLOR_SH_WHITE,
 
-        0,
+    0,
 
-        {0}
-    };
-    
+    {0}};
+
 /* #else
     const static Point_ BIPUI_TOP_LEFT_POINT = {
 
@@ -278,39 +269,48 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, // initiali
                 char *label, short border, short filling, short text, void *callbackFunction);
 void spawnButton(Button_ *button, Layer_ *layer);       // adds button to layer and draws it - note: graphics are shown only after calling refresh_screen_lines()
 void drawButton(Button_ *button);                       // draws a button
-short addButtonToLayer(Button_ *button, Layer_ *layer); // adds button to layer without drawing it
+short addButtonToLayer(Button_ button, Layer_ *layer); // adds button to layer without drawing it
 
 long getLongColour(short colour); // returns long from short versions
 void caffeine(Caffeine_t coffee); // set display backlight
 void setLayerBackground(Layer_ *layer, short colour);
 Layer_ *createLayer(void);
 void destroyLayer(Layer_ *layer);
-Layer_ *getActiveLayer(app_data_t *app_data);                           // returns layer currently in use
-Layer_ *getTopLayer(app_data_t *app_data);                              // returns topmost layer
-void processTap(Layer_ *layer, int x, int y);                           // iterates over a layer for the button corresponding to a tap
-Button_ moveInDirectionButton(Button_ *button, Way_ dir, short offset); // given a button, it changes its parameters to move it.
-Button_ mirrorInDirectionButton(Button_ *button, Way_ dir);             // mirrors a button with respect to one of the four axes
-short findHighestOpaqueLayer(Window_ *window);                          // returns the highest indexed layer with bg != COLOR_SH_MASK
-Window_ *getCurrentWindow(app_data_t *app_data);
+
+Layer_ *getTopLayer(app_data_t *app_data);                           // returns topmost layer
+void processTap(Layer_ *layer, int x, int y);                        // iterates over a layer for the button corresponding to a tap
+void moveInDirectionButton(Button_ *button, Way_ dir, short offset); // given a button, it changes its parameters to move it.
+Button_ mirrorInDirectionButton(Button_ *button, Way_ dir);          // mirrors a button with respect to one of the four axes
+
 short getCurrentLayerIndex(Window_ *window);
 void initializeLayer(Layer_ *layer);                // setting layer params to default
 void setLayerTextBox(Layer_ *layer, TextBox_ tbox); // setting text box for a given layer
-short addLayerToWindow(Layer_ *layer, Window_ *window);
-void spawnLayer(Layer_ *layer, Window_ *window);
-void refreshWindow(Window_ *window);
+
+//void spawnLayer(Layer_ *layer, Window_ *window);
+
 void drawTextBox(TextBox_ *textbox);
 void refreshLayer(Layer_ *layer, short repaint);
-void initializeWindow(Window_ *window);
-void initializeViewport(Viewport_ *wp);
-Viewport_ *createViewport(void);
-Viewport_ *getCurrentViewport(app_data_t *app_data);
-void setViewportLayer(Viewport_ *vp, Layer_ *layer, Way_ dir);
-void setActiveLayerViewport(Viewport_ *vp, Layer_ *layer);
+
+//void initializeViewport(Viewport_ *wp);
+//Viewport_ *createViewport(void);
+//Viewport_ *getCurrentViewport(app_data_t *app_data);
+//void setViewportLayer(Viewport_ *vp, Layer_ *layer, Way_ dir);
+
 void destroyViewport(Viewport_ *vp); // destroy the viewport
 void blank_screen(void);
 void printErrorText(char *error);
+
 char getActiveOverlayValue(Layer_ *layer);
 void resetActiveOverlayValue(Layer_ *layer);
 void setActiveOverlayValue(Layer_ *layer);
+
+void initializeWindow(Window_ *window);
+void refreshWindow(Window_ *window);
+Layer_ *addLayerToWindow(Window_ *window);
+short removeLayerFromWindow(Window_ *window);
+Window_ *getCurrentWindow(app_data_t *app_data);
+short findHighestOpaqueLayer(Window_ *window); // returns the highest indexed layer with bg != COLOR_SH_MASK
+void setActiveWindowViewport(Viewport_ *vp, Way_ way);  //sets the active window
+Window_ *getActiveWindow(Viewport_ *vp);     // returns the active window
 
 #endif

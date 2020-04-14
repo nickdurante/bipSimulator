@@ -64,7 +64,8 @@ typedef enum Way_
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+    CENTER
 
 } Way_;
 
@@ -130,20 +131,31 @@ typedef struct Layer_
 typedef struct Window_
 {
 
-    Layer_ layerArray[MAX_NUM_LAYERS];
+    Layer_ *layerArray[MAX_NUM_LAYERS];
     short index;
 
 } Window_;
 typedef struct Viewport_
 {
 
-    Layer_ *active; // layer currently drawn
-    Layer_ *up;     // pointers to layers on all sides
-    Layer_ *down;
-    Layer_ *left;
-    Layer_ *right;
+    Window_ center;    
+    Window_ left;
+    Window_ right;
+    Window_ up;
+    Window_ down;
+
+    Way_ active;    // the window currently onscreen
+
 
 } Viewport_;
+
+typedef struct Game_
+{
+
+    unsigned short score;
+    unsigned short record;
+} Game_;
+
 typedef struct app_data_t
 {
     void *ret_f; //	the address of the return function
