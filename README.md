@@ -4,6 +4,10 @@
 
 This is a collection of utilities to view and debug BipOS applications on a PC.
 
+## Usage
+
+Place your \*.c application in `app` and the associated \*.h in `include`. The application needs to include the correct headers and flags, as per [this](https://github.com/enricorov/bipsim-template) template.
+
 ## C libraries:
 
 1. [cJSON](https://github.com/DaveGamble/cJSON)
