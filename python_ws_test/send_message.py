@@ -17,6 +17,9 @@ async def send_message():
 
     async with websockets.connect(uri) as websocket:
         await websocket.send(argv[1])
+        reply = await websocket.recv()
+        if reply:
+            print(reply)
 
 
 def main():
