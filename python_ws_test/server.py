@@ -16,19 +16,16 @@ async def broadcast_message(message):
 
 
 async def ws_server(websocket, path):
-    # register(websocket) sends user_event() to websocket
-    print("Running server at: " + IP + " " + str(PORT))
-    # add connected ws to set
+    print("Client connected at: {}:{}".format(IP, PORT))
     USERS.add(websocket)
     try:
-        #await websocket.send(state_event())
         async for message in websocket:
             data = json.loads(message)
             print(data)
             await broadcast_message(message)
 
     except:
-        print("uh oh")
+        print("An exception occurred")
     finally:
         USERS.remove(websocket)
 
