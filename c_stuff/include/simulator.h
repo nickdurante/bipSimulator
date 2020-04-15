@@ -85,9 +85,9 @@ typedef struct Button_
 
     short border, // color of button features
         filling,
-        text;
+        textColour;
 
-    void (*callbackFunction)(void *, void *);
+    void (*callbackFunction)();
 
     ButtonParams_ params; // style, state..
 
@@ -118,7 +118,7 @@ typedef struct Layer_
 {
 
     Button_ buttonArray[MAX_NUM_BUTTONS]; // all buttons
-    unsigned short index;                 // current valid button, init=0
+    unsigned short buttonIndex;                 // current valid button, init=0
 
     short backgroundColour; // background for the current Layer
     short visible;          // is the layer visible?
@@ -132,7 +132,7 @@ typedef struct Window_
 {
 
     Layer_ *layerArray[MAX_NUM_LAYERS];
-    short index;
+    short layerIndex;
 
 } Window_;
 typedef struct Viewport_

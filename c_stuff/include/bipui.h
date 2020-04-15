@@ -86,7 +86,7 @@ typedef struct Button_
 
     short border, // color of button features
         filling,
-        text;
+        textColour;
 
     void (*callbackFunction)();
 
@@ -180,7 +180,7 @@ const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
 
 const static TextBox_ DEFAULT_TEXTBOX = {
 
-    {10, 10},
+    {4, 4},
     {VIDEO_Y - 5, VIDEO_X - 5},
 
     "TEXTBOX SAMPLE",
@@ -269,7 +269,7 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, // initiali
                 char *label, short border, short filling, short text, void *callbackFunction);
 void spawnButton(Button_ *button, Layer_ *layer);       // adds button to layer and draws it - note: graphics are shown only after calling refresh_screen_lines()
 void drawButton(Button_ *button);                       // draws a button
-short addButtonToLayer(Button_ button, Layer_ *layer); // adds button to layer without drawing it
+short addButtonToLayer(Button_ *button, Layer_ *layer); // adds button to layer without drawing it
 
 long getLongColour(short colour); // returns long from short versions
 void caffeine(Caffeine_t coffee); // set display backlight
@@ -312,5 +312,7 @@ Window_ *getCurrentWindow(app_data_t *app_data);
 short findHighestOpaqueLayer(Window_ *window); // returns the highest indexed layer with bg != COLOR_SH_MASK
 void setActiveWindowViewport(Viewport_ *vp, Way_ way);  //sets the active window
 Window_ *getActiveWindow(Viewport_ *vp);     // returns the active window
+
+app_data_t *getAppData(void);
 
 #endif

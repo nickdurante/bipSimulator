@@ -21,7 +21,7 @@ int interactionHandler(void *param);
 void refreshScreen();
 void begin(app_data_t *app_data);
 
-void layerMainConstructor(Layer_ *layer, app_data_t *app_data);
+void layerMainConstructor(Layer_ *layer);
 void layerHelpConstructor(Layer_ *layer);
 void layerSettingsConstructor(Layer_ *layer);
 

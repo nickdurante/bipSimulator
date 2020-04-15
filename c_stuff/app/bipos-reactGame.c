@@ -40,16 +40,51 @@ int main(int param0, char **argv)
 
 void goToSettingsCallbackFunction(Layer_ *layer, short button_id)
 {
+	
+	setActiveWindowViewport(&getAppData()->vp, LEFT);
+	refreshWindow(getActiveWindow(&getAppData()->vp));
+
 }
 
 void goToHelpCallbackFunction(Layer_ *layer, short button_id)
 {
+	
+	setActiveWindowViewport(&getAppData()->vp, RIGHT);
+	refreshWindow(getActiveWindow(&getAppData()->vp));
+
 }
 
 void startGameCallbackFunction(Layer_ *layer, short button_id)
 {
 }
 // CONSTRUCTORS - Defining elements, put the messy intializations here
+
+void layerOverlayConstructor(Layer_ *layerOverlay) {
+
+	setLayerBackground(layerOverlay, COLOR_SH_AQUA);
+
+	TextBox_ tempText = DEFAULT_TEXTBOX;
+
+	tempText.topLeft = (Point_ ) {4, 70};
+	tempText.bottomRight = (Point_) {172, 150};
+	_strcpy(tempText.body, "This is an overlay");
+	tempText.colour = COLOR_SH_WHITE;
+	tempText.background = COLOR_SH_BLACK;
+
+	setLayerTextBox(layerOverlay, tempText);
+
+	Button_ placeholderButton = DEFAULT_BUTTON_INSTANCE;
+	placeholderButton.topLeft = (Point_) {4, 25};
+	placeholderButton.bottomRight = (Point_) {172, 50};
+
+	placeholderButton.filling = COLOR_SH_BLACK;
+	placeholderButton.border = COLOR_SH_RED;
+
+	placeholderButton.params.style = BUTTON_STYLE_DEFAULT_SQUARED;
+	_strcpy(placeholderButton.label , "OVERLAY");
+
+	addButtonToLayer(&placeholderButton, layerOverlay);
+}
 
 void layerSettingsConstructor(Layer_ *layerSettings) {
 
@@ -59,7 +94,7 @@ void layerSettingsConstructor(Layer_ *layerSettings) {
 
 	tempText.topLeft = BIPUI_TOP_LEFT_POINT;
 	tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
-	_strcpy(tempText.body, "React!");
+	_strcpy(tempText.body, "Options");
 	tempText.colour = COLOR_SH_WHITE;
 	tempText.background = COLOR_SH_BLACK;
 
@@ -75,7 +110,7 @@ void layerHelpConstructor(Layer_ *layerHelp) {
 
 	tempText.topLeft = BIPUI_TOP_LEFT_POINT;
 	tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
-	_strcpy(tempText.body, "React!");
+	_strcpy(tempText.body, "Help");
 	tempText.colour = COLOR_SH_WHITE;
 	tempText.background = COLOR_SH_BLACK;
 
@@ -83,7 +118,7 @@ void layerHelpConstructor(Layer_ *layerHelp) {
 
 }
 
-void layerMainConstructor(Layer_ *layerMain, app_data_t *app_data)
+void layerMainConstructor(Layer_ *layerMain)
 {
 
 	short width = 81; // handy parameters for easier button creation
@@ -119,13 +154,13 @@ void layerMainConstructor(Layer_ *layerMain, app_data_t *app_data)
 			   COLOR_SH_BLACK,
 			   goToSettingsCallbackFunction);
 
-	addButtonToLayer(placeholderButton, layerMain);
-/*	
+	addButtonToLayer(&placeholderButton, layerMain);
+	
 	moveInDirectionButton(&placeholderButton, RIGHT, horizontalSeparation); // top right
 
 	_strcpy(placeholderButton.label, "HELP");
 	placeholderButton.filling = COLOR_SH_YELLOW;
-	placeholderButton.text = COLOR_SH_BLACK;
+	placeholderButton.textColour = COLOR_SH_BLACK;
 	placeholderButton.callbackFunction = goToHelpCallbackFunction;
 
 	addButtonToLayer(&placeholderButton, layerMain);
@@ -145,7 +180,7 @@ void layerMainConstructor(Layer_ *layerMain, app_data_t *app_data)
 			   COLOR_SH_WHITE,
 			   startGameCallbackFunction);
 
-	addButtonToLayer(&placeholderButton, layerMain); */
+	addButtonToLayer(&placeholderButton, layerMain);
 
 }
 
@@ -155,19 +190,23 @@ void begin(app_data_t *app_data)
 	// creating pointers and adding layers to windows, this will malloc the layers
 
 	Viewport_ *vp = &app_data->vp;
-
+	
 	Layer_ *layerMain = addLayerToWindow(&vp->center);
-	Layer_ *layerSettings = addLayerToWindow(&vp->right);
-	Layer_ *layerHelp = addLayerToWindow(&vp->left);
+	Layer_ *layerSettings = addLayerToWindow(&vp->left);
+	Layer_ *layerOverlay = addLayerToWindow(&vp->left);
+	Layer_ *layerHelp = addLayerToWindow(&vp->right);
 
 	// Create layers here
-	layerMainConstructor(layerMain, app_data);
-/* 	layerSettingsConstructor(layerSettings);
-	layerHelpConstructor(layerHelp); */
+	int addressLayerIndex = &vp->center.layerIndex;
+
+	layerMainConstructor(layerMain);
+	layerOverlayConstructor(layerOverlay);
+	layerSettingsConstructor(layerSettings);
+	layerHelpConstructor(layerHelp); 
 
 	setActiveWindowViewport(vp, CENTER);
 
-	refreshWindow(getActiveWindow(getCurrentViewport(app_data)));
+	refreshWindow(getActiveWindow(&app_data->vp));
 }
 
 void end(app_data_t *app_data) {
@@ -260,7 +299,7 @@ void refreshScreen()
 	app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
 	app_data_t *app_data = *app_data_p;				//	pointer to screen data
 #endif
-	refreshWindow(getActiveWindow(getCurrentViewport(app_data)));
+	refreshWindow(getActiveWindow(&app_data->vp));
 	vibrate(2, 50, 150);
 }
 
@@ -277,15 +316,14 @@ int interactionHandler(void *param)
 	struct gesture_ *gest = param;
 	int result = 0;
 
-	Window_ *activeWindow = getActiveWindow(getCurrentViewport(app_data));
-	Layer_ 	*activeLayer = activeWindow->layerArray[activeWindow->index];
+	Window_ *activeWindow = getActiveWindow(&app_data->vp);
+	Layer_ 	*activeLayer = activeWindow->layerArray[0];	// for now, interaction can be had with the first layer
 
 	switch (gest->gesture)
 	{
 	case GESTURE_CLICK:
 	{
 		processTap(activeLayer, gest->touch_pos_x, gest->touch_pos_y);
-
 		break;
 	};
 	case GESTURE_SWIPE_RIGHT:
@@ -307,8 +345,9 @@ int interactionHandler(void *param)
 	case GESTURE_SWIPE_DOWN:
 	{ // swipe down
 
-		//refreshLayer(getActiveLayer(app_data), 1); // manual refresh
-		//set_update_period(0, 0);				   // removing scheduled refresh
+		setActiveWindowViewport(&app_data->vp, CENTER);
+		//set_update_period(1, 100);				   // removing scheduled refresh
+		refreshWindow(getActiveWindow(&app_data->vp));
 		break;
 	};
 	default:

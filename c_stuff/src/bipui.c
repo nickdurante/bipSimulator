@@ -1,3 +1,4 @@
+
 #ifdef __SIMULATION__
 #include <simulator.h>
 #endif
@@ -81,7 +82,7 @@ void initializeViewport(Viewport_ *vp)
 void initializeWindow(Window_ *window)
 {
 
-    window->index = -1;
+    window->layerIndex = -1;
 }
 
 void drawTextBox(TextBox_ *box)
@@ -98,11 +99,18 @@ void drawTextBox(TextBox_ *box)
 void refreshWindow(Window_ *window)
 {
     short i;
-    for (i = findHighestOpaqueLayer(window); i <= window->index; i++)
-        refreshLayer(&window->layerArray[i], 0); // do not repaint since we're drawing more stuff on top of this layer
+    for (i = 0; i < window->layerIndex; i++) {
 
+        if (i == 0)
+        { //hack to have transparency
+            set_bg_color(getLongColour(window->layerArray[i]->backgroundColour));
+            fill_screen_bg();
+        }
+    refreshLayer(window->layerArray[i], 0); // do not repaint since we're drawing more stuff on top of this layer
+    }
     set_graph_callback_to_ram_1();
-    repaint_screen_lines(0, VIDEO_Y);
+    //repaint_screen_lines(0, VIDEO_Y);
+    repaint_screen();
 }
 
 /* void spawnLayer(Layer_ *layer, Window_ *window)
@@ -118,7 +126,7 @@ void refreshWindow(Window_ *window)
 short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
 {
 
-    if (window->index == -1)
+    if (window->layerIndex == -1)
     {
         //window full
         printErrorText("NO LAYERS");
@@ -126,9 +134,9 @@ short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
     }
     else
     {
-        destroyLayer(window->layerArray[window->index]); // free layer memory
+        destroyLayer(window->layerArray[window->layerIndex]); // free layer memory
 
-        window->index--;
+        window->layerIndex--;
         return 0;
     }
 }
@@ -138,19 +146,18 @@ Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
 
     Layer_ *layer;
 
-    if (window->index >= MAX_NUM_LAYERS)
+    if (window->layerIndex >= MAX_NUM_LAYERS)
     {
         //window full
         printErrorText("WINDOW FULL");
-        
     }
     else
-    { // add layer to window - aka putting layer pointer in layer array
-        window->index++;
-        window->layerArray[window->index] = createLayer(); //malloc layer
-        layer = &window->layerArray[window->index];         // assigning pointer to variable
+    {                          // add layer to window - aka putting layer pointer in layer array
+        layer = createLayer(); //malloc layer
+        window->layerArray[window->layerIndex] = layer;
+        window->layerIndex++;
 
-        return layer;
+        return layer; // returning pointer
     }
 }
 
@@ -164,14 +171,14 @@ void initializeLayer(Layer_ *layer)
 {
 
     layer->backgroundColour = COLOR_SH_BLACK;
-    layer->index = 0;
+    layer->buttonIndex = 0;
     layer->visible = 1;
 }
 
 short getCurrentLayerIndex(Window_ *window)
 {
 
-    return window->index;
+    return window->layerIndex;
 }
 
 /* Window_ *getCurrentWindow(app_data_t *app_data) {
@@ -184,7 +191,7 @@ short findHighestOpaqueLayer(Window_ *window)
 
     short highest = 0;
     short i = 0;
-    for (i = 0; i < window->index; i++)
+    for (i = 0; i < window->layerIndex; i++)
     {
         if (window->layerArray[i]->backgroundColour != COLOR_SH_MASK)
             highest = i;
@@ -198,9 +205,9 @@ void processTap(Layer_ *layer, int x, int y)
 
     short i;
     Button_ temp;
-    //Layer_ *layer = &window->layerArray[window->index];
+    //Layer_ *layer = &window->layerArray[window->layerIndex];
 
-    for (i = 0; i < layer->index; i++)
+    for (i = 0; i < layer->buttonIndex; i++)
     {
         temp = layer->buttonArray[i];
         // was the tap inside the button?
@@ -223,7 +230,7 @@ Layer_ *createLayer(void)
     else
     {
         _memclr(temp, sizeof(Layer_));
-        temp->params.refreshDelay = 0; // initializing the params for the layer
+        //temp->params.refreshDelay = 0; // initializing the params for the layer
     }
 
     return temp;
@@ -242,12 +249,12 @@ void destroyLayer(Layer_ *layer)
 void refreshLayer(Layer_ *layer, short repaint)
 {
 
-    set_bg_color(layer->backgroundColour);
-    fill_screen_bg();
+    //set_bg_color(layer->backgroundColour);
+    //fill_screen_bg();
     //    set_graph_callback_to_ram_1();
 
     short i;
-    for (i = 0; i < layer->index; i++)
+    for (i = 0; i < layer->buttonIndex; i++)
     {
 
         drawButton(&layer->buttonArray[i]);
@@ -416,10 +423,10 @@ void moveInDirectionButton(Button_ *button, Way_ dir, short separation)
     }
 } */
 
-short addButtonToLayer(Button_ button, Layer_ *layer)
+short addButtonToLayer(Button_ *button, Layer_ *layer)
 {
 
-    if (layer->index >= MAX_NUM_BUTTONS)
+    if (layer->buttonIndex >= MAX_NUM_BUTTONS)
     {
         // layer full
         printErrorText("DATABASE FULL");
@@ -427,8 +434,8 @@ short addButtonToLayer(Button_ button, Layer_ *layer)
     }
     else
     { // add button to layer
-        layer->buttonArray[layer->index] = button;
-        layer->index++;
+        layer->buttonArray[layer->buttonIndex] = *button;
+        layer->buttonIndex++;
         return 0;
     }
 }
@@ -444,7 +451,7 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label
     _strcpy(button->label, label);
     button->border = border;
     button->filling = filling;
-    button->text = text;
+    button->textColour = text;
     button->callbackFunction = callbackFunction;
     button->params.style = BUTTON_STYLE_ROUNDED_NOBORDER;
 }
@@ -507,7 +514,7 @@ void drawButton(Button_ *button) // graphics of the button
     };
     }
 
-    set_fg_color(getLongColour(temp.text)); // Text is universal for now
+    set_fg_color(getLongColour(temp.textColour)); // Text is universal for now
 
     text_out_center(temp.label,                                     // the text
                     (int)(temp.topLeft.x + temp.bottomRight.x) / 2, // median
@@ -573,6 +580,20 @@ void setActiveWindowViewport(Viewport_ *vp, Way_ way)
 { // sets the active window
 
     vp->active = way;
+}
+
+app_data_t *getAppData(void)
+{
+
+#ifdef __SIMULATION__
+    app_data_t *app_data = get_app_data_ptr();
+    app_data_t **app_data_p = &app_data;
+#else
+    app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
+    app_data_t *app_data = *app_data_p;             //	pointer to screen data
+#endif
+
+    return app_data;
 }
 
 /* void setActiveOverlayValue(Layer_ *layer)
