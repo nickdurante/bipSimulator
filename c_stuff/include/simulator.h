@@ -21,10 +21,12 @@
 #endif
 
 #define MAX_NUM_BUTTONS 8
-#define MAX_SIZE_BUTTON_LABEL 20
+#define MAX_SIZE_BUTTON_LABEL 15
 #define MAX_SIZE_TEXT_BOX 120
 
 #define MAX_SIZE_WINDOW_LABEL 30
+
+#define MAX_NUM_WINDOWS 10
 
 #define MAX_NUM_LAYERS 2
 
@@ -89,6 +91,8 @@ typedef struct Button_
         filling,
         textColour;
 
+    char visible;
+
     void (*callbackFunction)();
 
     ButtonParams_ params; // style, state..
@@ -106,7 +110,7 @@ typedef struct TextBox_
     short colour,
         background;
 
-    short visible;
+    char visible;
 
 } TextBox_;
 
@@ -124,9 +128,9 @@ typedef struct Layer_
     unsigned short buttonIndex;                 // current valid button, init=0
 
     short backgroundColour; // background for the current Layer
-    short visible;          // is the layer visible?
+    char visible;          // is the layer visible?
 
-    TextBox_ textBox;                       // textbox for general usage
+    TextBox_ *textBox;                       // textbox for general usage
 
     LayerParams_ params; // holding state of the layer
     void (*callbackFunction)();
@@ -134,6 +138,8 @@ typedef struct Layer_
 
 typedef struct Window_
 {
+    int neighbors[4];      //pointers to neighboring windows (up. down, left, right)
+
     char name[MAX_SIZE_WINDOW_LABEL];
     char nameVisible;
     
@@ -144,14 +150,10 @@ typedef struct Window_
 typedef struct Viewport_
 {
 
-    Window_ center;    
-    Window_ left;
-    Window_ right;
-    Window_ up;
-    Window_ down;
+    Window_ *windowArray[MAX_NUM_WINDOWS];
+    char windowIndex;
 
-    Way_ active;    // the window currently onscreen
-
+    Window_ *active;
 
 } Viewport_;
 

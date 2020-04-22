@@ -291,6 +291,7 @@ void initializeLayer(Layer_ *layer);                // setting layer params to d
 
 //void spawnLayer(Layer_ *layer, Window_ *window);
 
+TextBox_ *createTextbox(void);
 void drawTextBox(TextBox_ *textbox);
 void refreshLayer(Layer_ *layer, short repaint);
 
@@ -307,8 +308,14 @@ char getActiveOverlayValue(Layer_ *layer);
 void resetActiveOverlayValue(Layer_ *layer);
 void setActiveOverlayValue(Layer_ *layer);
 
+Window_ *addWindowToViewport(Viewport_ *vp);
+short removeWindowFromViewport(Viewport_ *vp);
+Window_ *createWindow(void);
 void initializeWindow(Window_ *window);
 void refreshWindow(Window_ *window, char repaint);
+void linkWindows(Window_ *windowReference, Way_ way, Window_ *windowToLink);
+
+
 Layer_ *addLayerToWindow(Window_ *window);
 short removeLayerFromWindow(Window_ *window);
 Window_ *getCurrentWindow(app_data_t *app_data);
@@ -316,6 +323,8 @@ short findHighestOpaqueLayer(Window_ *window); // returns the highest indexed la
 void setActiveWindowViewport(Viewport_ *vp, Way_ way);  //sets the active window
 Window_ *getActiveWindow(Viewport_ *vp);     // returns the active window
 short setWindowName(char *name, Window_ *window);
+
+void processSwipe(Window_ *window, char gesture);
 
 app_data_t *getAppData(void);
 

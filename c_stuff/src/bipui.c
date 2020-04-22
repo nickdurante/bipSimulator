@@ -18,71 +18,36 @@ Viewport_ *getCurrentViewport(app_data_t *app_data)
     return &app_data->vp;
 }
 
-/* void setViewportLayer(Viewport_ *vp, Layer_ *layer, Way_ dir)
+void destroyViewport(Viewport_ *vp)
 {
 
-    switch (dir)
+    short i;
+
+    for (i = 0; i < vp->windowIndex; i++)
     {
-
-    case UP:
-
-        vp->up = layer;
-        break;
-
-    case DOWN:
-
-        vp->down = layer;
-        break;
-
-    case LEFT:
-
-        vp->left = layer;
-        break;
-
-    case RIGHT:
-
-        vp->right = layer;
-        break;
-
-    default:
-    {
-        // touch wood
-    };
+        destroyWindow(vp->windowArray[i]);
     }
-} */
-
-/* void destroyViewport(Viewport_ *vp)
-{
-
-    //vPortFree(vp);
 }
-
-Viewport_ *createViewport(void)
-{
-
-    Viewport_ *temp = (Viewport_ *)pvPortMalloc(sizeof(Viewport_));
-
-    if (temp == NULL)
-        vibrate(2, 50, 50);
-    else
-    {
-        _memclr(temp, sizeof(Viewport_));
-        initializeLayer(temp->active);
-    }
-
-    return temp;
-}
-
-void initializeViewport(Viewport_ *vp)
-{
-
-    initializeLayer(vp->active);
-} */
 
 void initializeWindow(Window_ *window)
 {
 
     window->layerIndex = -1;
+}
+
+TextBox_ *createTextbox(void)
+{
+
+    TextBox_ *temp = (TextBox_ *)pvPortMalloc(sizeof(TextBox_));
+
+    if (temp == NULL)
+        vibrate(2, 50, 50);
+    else
+    {
+        _memclr(temp, sizeof(TextBox_));
+    }
+
+    return temp;
 }
 
 void drawTextBox(TextBox_ *box)
@@ -125,8 +90,8 @@ void refreshWindow(Window_ *window, char repaint)
 
     //set_graph_callback_to_ram_1();
     //repaint_screen_lines(0, VIDEO_Y);
-    
-    if(repaint)
+
+    if (repaint)
         repaint_screen();
 }
 
@@ -138,85 +103,97 @@ short setWindowName(char *name, Window_ *window)
     return (short)_strcpy(window->name, name);
 }
 
-short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
+Window_ *createWindow(void)
 {
 
-    if (window->layerIndex == -1)
-    {
-        //window full
-        printErrorText("NO LAYERS");
-        return 1;
-    }
+    Window_ *temp = (Window_ *)pvPortMalloc(sizeof(Window_));
+
+    if (temp == NULL)
+        vibrate(2, 50, 50);
     else
     {
-        destroyLayer(window->layerArray[window->layerIndex]); // free layer memory
-
-        window->layerIndex--;
-        return 0;
+        _memclr(temp, sizeof(Window_));
     }
+
+    return temp;
 }
 
 void destroyWindow(Window_ *window)
 {
+    short i;
 
-    short i = window->layerIndex;
-
-    while (i != 0)
+    for (i = 0; i < window->layerIndex; i++)
     {
 
         destroyLayer(window->layerArray[i]);
-        i--;
     }
 }
 
-Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
+Window_ *addWindowToViewport(Viewport_ *vp)
 {
 
-    Layer_ *layer;
+    Window_ *window;
 
-    if (window->layerIndex >= MAX_NUM_LAYERS)
+    if (vp->windowIndex >= MAX_NUM_WINDOWS)
     {
-        //window full
-        printErrorText("WINDOW FULL");
+
+        printErrorText("VIEWPORT FULL");
     }
     else
-    {                          // add layer to window - aka putting layer pointer in layer array
-        layer = createLayer(); //malloc layer
-        window->layerArray[window->layerIndex] = layer;
-        window->layerIndex++;
-
-        layer->visible = 1; // layers visible by default
-
-        return layer; // returning pointer
-    }
-}
-
-void initializeLayer(Layer_ *layer)
-{
-
-    layer->backgroundColour = COLOR_SH_BLACK;
-    layer->buttonIndex = 0;
-    layer->visible = 1;
-}
-
-short getCurrentLayerIndex(Window_ *window)
-{
-
-    return window->layerIndex;
-}
-
-short findHighestOpaqueLayer(Window_ *window)
-{
-
-    short highest = 0;
-    short i = 0;
-    for (i = 0; i < window->layerIndex; i++)
     {
-        if (window->layerArray[i]->backgroundColour != COLOR_SH_MASK)
-            highest = i;
-    }
+        window = createWindow();
+        vp->windowArray[vp->windowIndex] = window;
+        vp->windowIndex++;
 
-    return highest;
+        return window;
+    }
+}
+
+short removeWindowFromViewport(Viewport_ *vp)
+{
+
+    if (vp->windowIndex == 0)
+    {
+
+        printErrorText("NO WINDOWS");
+        return 1;
+    }
+    else
+    {
+        destroyWindow(vp->windowArray[vp->windowIndex]);
+        vp->windowIndex--;
+        return 0;
+    }
+}
+
+void linkWindows(Window_ *windowReference, Way_ way, Window_ *windowToLink)
+{
+
+    switch (way)
+    {
+    case UP:
+        windowReference->neighbors[UP] = windowToLink;
+        windowToLink->neighbors[DOWN] = windowReference;
+        break;
+
+    case DOWN:
+        windowReference->neighbors[DOWN] = windowToLink;
+        windowToLink->neighbors[UP] = windowReference;
+        break;
+
+    case LEFT:
+        windowReference->neighbors[LEFT] = windowToLink;
+        windowToLink->neighbors[RIGHT] = windowReference;
+        break;
+
+    case RIGHT:
+
+        windowReference->neighbors[RIGHT] = windowToLink;
+        windowToLink->neighbors[LEFT] = windowReference;
+    default:
+
+        break;
+    }
 }
 
 void processTap(Layer_ *layer, int x, int y)
@@ -237,6 +214,14 @@ void processTap(Layer_ *layer, int x, int y)
             temp->callbackFunction(layer, i);
         }
     }
+}
+
+void processSwipe(Window_ *window, char gesture)
+{
+    Way_ way = (Way_)gesture - 2; // casting the gesture to way type
+
+    if (window->neighbors[way] != 0)
+        getAppData()->vp.active = (Window_ *)window->neighbors[(int)way];
 }
 
 Layer_ *createLayer(void)
@@ -263,175 +248,68 @@ void destroyLayer(Layer_ *layer)
     for (i = 0; i < layer->buttonIndex; i++)
         vPortFree(layer->buttonArray[i]);
 
+    vPortFree(layer->textBox);
+
     vPortFree(layer);
 }
 
 void refreshLayer(Layer_ *layer, short repaint)
 {
 
-    //set_bg_color(layer->backgroundColour);
-    //fill_screen_bg();
-    //    set_graph_callback_to_ram_1();
-
     short i;
     for (i = 0; i < layer->buttonIndex; i++)
     {
-
-        drawButton(layer->buttonArray[i]);
+        if (layer->buttonArray[i]->visible)
+            drawButton(layer->buttonArray[i]);
     }
 
-    //drawTextBox(&layer->textBox);
+    if (layer->textBox) // uninitialized pointers == 0
+        if (layer->textBox->visible)
+            drawTextBox(&layer->textBox);
 
     if (repaint)
         //repaint_screen_lines(0, VIDEO_Y);
         repaint_screen();
 }
-
-/* Layer_ *getTopLayer(app_data_t *app_data){
-
-    short top = app_data->mainWindow.index;
-
-    top++;
-
-    return &app_data->mainWindow.layerArray[top];
-} */
-
-Window_ *getActiveWindow(Viewport_ *vp)
+Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
 {
 
-    switch (vp->active)
+    Layer_ *layer;
+
+    if (window->layerIndex >= MAX_NUM_LAYERS)
     {
+        //window full
+        printErrorText("WINDOW FULL");
+    }
+    else
+    {                          // add layer to window - aka putting layer pointer in layer array
+        layer = createLayer(); //malloc layer
+        window->layerArray[window->layerIndex] = layer;
+        window->layerIndex++;
 
-    case UP:
+        layer->visible = 1; // layers visible by default
 
-        return &vp->up;
-        break;
-
-    case DOWN:
-
-        return &vp->down;
-        break;
-
-    case LEFT:
-
-        return &vp->left;
-        break;
-
-    case RIGHT:
-
-        return &vp->right;
-        break;
-
-    case CENTER:
-
-        return &vp->center;
-        break;
-
-    default:
-    {
-        // touch wood
-    };
-    };
+        return layer; // returning pointer
+    }
 }
 
-Button_ mirrorInDirectionButton(Button_ *button, Way_ dir)
+short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
 {
 
-    Button_ temp = *button;
-
-    switch (dir)
+    if (window->layerIndex == 0)
     {
-
-    case UP:
-
-        temp.topLeft.x = abssub(VIDEO_Y, temp.bottomRight.x);
-        temp.bottomRight.x = abssub(VIDEO_Y, temp.topLeft.x);
-        break;
-
-    case DOWN:
-
-        temp.topLeft.x = VIDEO_Y - temp.bottomRight.x;
-        temp.bottomRight.x = VIDEO_Y - temp.topLeft.x;
-        break;
-
-    case LEFT:
-
-        temp.topLeft.y = abssub(VIDEO_X, temp.bottomRight.y);
-        temp.bottomRight.y = abssub(VIDEO_X, temp.topLeft.y);
-        break;
-
-    case RIGHT:
-
-        temp.topLeft.y = VIDEO_X - temp.bottomRight.y;
-        temp.bottomRight.y = VIDEO_X - temp.topLeft.y;
-        break;
-
-    default:
+        //window full
+        printErrorText("NO LAYERS");
+        return 1;
+    }
+    else
     {
-        // touch wood
-    };
-    };
+        destroyLayer(window->layerArray[window->layerIndex]); // free layer memory
 
-    return temp;
+        window->layerIndex--;
+        return 0;
+    }
 }
-
-/* void moveInDirectionButton(Button_ *button, Way_ dir, short separation)
-{
-
-    //Button_ temp = *button;
-
-    short width = (short)abssub(button->topLeft.x, button->bottomRight.x);  // considering the case when (a,b) is the bottom right point and
-    short height = (short)abssub(button->topLeft.y, button->bottomRight.y); //      not the top left
-
-    // a = x1, b = y1, c = x2, d = y2
-
-    switch (dir)
-    {
-
-    case UP:
-
-        button->topLeft.y -= (height + separation);
-        button->bottomRight.y -= (height + separation);
-        break;
-
-    case DOWN:
-
-        button->topLeft.y += (height + separation);
-        button->bottomRight.y += (height + separation);
-        break;
-
-    case LEFT:
-
-        button->topLeft.x -= (width + separation);
-        button->bottomRight.x -= (width + separation);
-        break;
-
-    case RIGHT:
-
-        button->topLeft.x += (width + separation);
-        button->bottomRight.x += (width + separation);
-        break;
-
-    default:
-    {
-        // touch wood
-    };
-    };
-
-    if (button->topLeft.x < 0) // display manager will freak out and hang when called with
-        button->topLeft.x = 0; //       negative values, so this limits the max range
-
-    if (button->topLeft.y < 0)
-        button->topLeft.y = 0;
-
-    if (button->bottomRight.x < 0)
-        button->bottomRight.x = 0;
-
-    if (button->bottomRight.y < 0)
-        button->bottomRight.y = 0;
-
-    //return temp;
-} */
 
 void movePoint(Point_ *point, Way_ dir, short space)
 {
@@ -455,23 +333,24 @@ void movePoint(Point_ *point, Way_ dir, short space)
 
         point->x += space;
         break;
-    
+
     default:
-    {};
+    {
+    };
     }
 
-    if(point->x < 0)
+    if (point->x < 0)
         point->x = 0;
-    
-    else if(point->x > VIDEO_X)
+
+    else if (point->x > VIDEO_X)
         point->x = VIDEO_X;
 
-    if(point->y < 0)
+    if (point->y < 0)
         point->y = 0;
-    
-    if(point->y > VIDEO_Y)
+
+    if (point->y > VIDEO_Y)
         point->y = VIDEO_Y;
-    
+
     return;
 }
 
@@ -496,7 +375,7 @@ Button_ *addButtonToLayer(Layer_ *layer)
 }
 
 void setButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label, short border,
-                short filling, short text, void *callbackFunction, Style_t style)
+               short filling, short text, void *callbackFunction, Style_t style)
 { // populating the struct
 
     button->topLeft.x = topLeft.x;
@@ -509,6 +388,8 @@ void setButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label,
     button->textColour = text;
     button->callbackFunction = callbackFunction;
     button->params.style = style;
+
+    button->visible = 1;
 }
 
 void drawButton(Button_ *button) // graphics of the button
@@ -631,12 +512,6 @@ short getLayerBackground(Layer_ *layer)
     return layer->backgroundColour;
 }
 
-void setActiveWindowViewport(Viewport_ *vp, Way_ way)
-{ // sets the active window
-
-    vp->active = way;
-}
-
 app_data_t *getAppData(void)
 {
 
@@ -650,24 +525,6 @@ app_data_t *getAppData(void)
 
     return app_data;
 }
-
-/* void setActiveOverlayValue(Layer_ *layer)
-{
-
-    layer->params.overlay = 1;
-}
-
-void resetActiveOverlayValue(Layer_ *layer)
-{
-
-    layer->params.overlay = 0;
-}
-
-char getActiveOverlayValue(Layer_ *layer)
-{
-
-    return layer->params.overlay; // that's a long return
-} */
 
 // DEBUG functions
 

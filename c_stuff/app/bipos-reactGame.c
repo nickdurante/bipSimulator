@@ -6,6 +6,13 @@
 	
 */
 
+#define CENTER_WINDOW 0
+#define UP_WINDOW 1
+#define DOWN_WINDOW 2
+#define LEFT_WINDOW 3
+#define RIGHT_WINDOW 4
+
+
 #include "bipos-reactGame.h"
 
 #ifdef __SIMULATION__
@@ -41,16 +48,14 @@ int main(int param0, char **argv)
 void goToSettingsCallbackFunction(Layer_ *layer, short button_id)
 {
 	
-	setActiveWindowViewport(&getAppData()->vp, LEFT);
-	refreshWindow(getActiveWindow(&getAppData()->vp), 1);
+
 
 }
 
 void goToHelpCallbackFunction(Layer_ *layer, short button_id)
 {
 	
-	setActiveWindowViewport(&getAppData()->vp, RIGHT);
-	refreshWindow(getActiveWindow(&getAppData()->vp), 1);
+
 
 }
 
@@ -85,7 +90,7 @@ void layerOverlayConstructor(Layer_ *layerOverlay) {
 
 }
 
-void layerSettingsConstructor(Layer_ *layerSettings) {
+void layerBlankConstructor(Layer_ *layerSettings) {
 
 	setLayerBackground(layerSettings, COLOR_SH_AQUA);
 
@@ -132,16 +137,6 @@ void layerMainConstructor(Layer_ *layerMain)
 	tempPointTwo.x += width;
 
 	layerMain->backgroundColour = COLOR_SH_BLACK;
-
-/* 	TextBox_ tempText;
-
-	tempText.topLeft = BIPUI_TOP_LEFT_POINT;
-	tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
-	_strcpy(tempText.body, "React!");
-	tempText.colour = COLOR_SH_WHITE;
-	tempText.background = COLOR_SH_BLACK; */
-
-	//setLayerTextBox(layerMain, tempText);
 
  	Button_ *placeholderButton;
 
@@ -197,34 +192,55 @@ void layerMainConstructor(Layer_ *layerMain)
 void begin(app_data_t *app_data)
 {
 
-	// creating pointers and adding layers to windows, this will malloc the layers
+	// creating windows here, adding them to the viewport allocates them
 
 	Viewport_ *vp = &app_data->vp;
 
-	setWindowName("Layers Demo", &vp->center);
-	Layer_ *layerMain = addLayerToWindow(&vp->center);
-	setWindowName("Settings", &vp->left);
-	Layer_ *layerSettings = addLayerToWindow(&vp->left);
-	Layer_ *layerOverlay = addLayerToWindow(&vp->left);
-	setWindowName("Help", &vp->right);
-	Layer_ *layerHelp = addLayerToWindow(&vp->right);
+	Window_ *centerWindow = addWindowToViewport(vp);
+	setWindowName("Center", centerWindow);
+	
+	Window_ *leftWindow = addWindowToViewport(vp);
+	setWindowName("Left", leftWindow);
 
-	// Create layers here
-	int addressLayerIndex = &vp->center.layerIndex;
+	Window_ *rightWindow = addWindowToViewport(vp);
+	setWindowName("Right", rightWindow);
 
-	layerMainConstructor(layerMain);
-	layerOverlayConstructor(layerOverlay);
-	layerSettingsConstructor(layerSettings);
-	layerHelpConstructor(layerHelp); 
+	Window_ *upWindow = addWindowToViewport(vp);
+	setWindowName("Up", upWindow);
 
-	setActiveWindowViewport(vp, CENTER);
+	Window_ *downWindow = addWindowToViewport(vp);
+	setWindowName("Down", downWindow);
 
-	refreshWindow(getActiveWindow(&app_data->vp), 1);
+	linkWindows(centerWindow, LEFT, leftWindow);
+	linkWindows(centerWindow, RIGHT, rightWindow);
+	linkWindows(centerWindow, UP, upWindow);
+	linkWindows(centerWindow, DOWN, downWindow);
+
+	// Creating (i.e. allocating) layers and using constructors to define their elements
+
+	Layer_ *layerTemp = addLayerToWindow(centerWindow);
+	layerTemp->backgroundColour = COLOR_SH_PURPLE;
+
+	layerTemp = addLayerToWindow(leftWindow);
+	layerTemp->backgroundColour = COLOR_SH_RED;
+
+	layerTemp = addLayerToWindow(rightWindow);	
+	layerTemp->backgroundColour = COLOR_SH_AQUA;
+	
+	layerTemp = addLayerToWindow(upWindow);	
+	layerTemp->backgroundColour = COLOR_SH_BLUE;
+
+	layerTemp = addLayerToWindow(downWindow);	
+	layerTemp->backgroundColour = COLOR_SH_YELLOW;
+
+	vp->active = centerWindow;
+
+	refreshWindow(centerWindow, 1);
 }
 
 void end(app_data_t *app_data) {
 
-	
+	destroyViewport(&app_data->vp);
 
 }
 
@@ -312,7 +328,7 @@ void refreshScreen()
 	app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
 	app_data_t *app_data = *app_data_p;				//	pointer to screen data
 #endif
-	refreshWindow(getActiveWindow(&app_data->vp), 1);
+	refreshWindow(app_data->vp.active, 1);
 	vibrate(2, 50, 150);
 }
 
@@ -329,7 +345,7 @@ int interactionHandler(void *param)
 	struct gesture_ *gest = param;
 	int result = 0;
 
-	Window_ *activeWindow = getActiveWindow(&app_data->vp);
+	Window_ *activeWindow = app_data->vp.active;
 	Layer_ 	*activeLayer = activeWindow->layerArray[0];	// for now, interaction can be had with the first layer
 
 	switch (gest->gesture)
@@ -341,26 +357,27 @@ int interactionHandler(void *param)
 	};
 	case GESTURE_SWIPE_RIGHT:
 	{ //	swipe to the right
-		// moveToLayer()
-		// show_menu_animate(app_data->ret_f, (unsigned int)show_screen, ANIMATE_RIGHT);
+		processSwipe(activeWindow, gest->gesture);
+		refreshWindow(app_data->vp.active, 1);
 		break;
 	};
 	case GESTURE_SWIPE_LEFT:
 	{ // swipe to the left
-		// actions when swiping left
+		processSwipe(activeWindow, gest->gesture);
+		refreshWindow(app_data->vp.active, 1);
 		break;
 	};
 	case GESTURE_SWIPE_UP:
 	{ // swipe up
-		// actions when swiping up
+		processSwipe(activeWindow, gest->gesture);
+		refreshWindow(app_data->vp.active, 1);
 		break;
 	};
 	case GESTURE_SWIPE_DOWN:
 	{ // swipe down
 
-		setActiveWindowViewport(&app_data->vp, CENTER);
-		//set_update_period(1, 100);				   // removing scheduled refresh
-		refreshWindow(getActiveWindow(&app_data->vp), 1);
+		processSwipe(activeWindow, gest->gesture);
+		refreshWindow(app_data->vp.active, 1);
 		break;
 	};
 	default:
