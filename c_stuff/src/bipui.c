@@ -96,32 +96,47 @@ void drawTextBox(TextBox_ *box)
                     (int)box->topLeft.y - 2);                       // slightly up
 }
 
-void refreshWindow(Window_ *window)
+void refreshWindow(Window_ *window, char repaint)
 {
     short i;
-    for (i = 0; i < window->layerIndex; i++) {
+
+    // render layers progressively
+    for (i = 0; i < window->layerIndex; i++)
+    {
 
         if (i == 0)
         { //hack to have transparency
             set_bg_color(getLongColour(window->layerArray[i]->backgroundColour));
             fill_screen_bg();
         }
-    refreshLayer(window->layerArray[i], 0); // do not repaint since we're drawing more stuff on top of this layer
+
+        if (window->layerArray[i]->visible)
+            refreshLayer(window->layerArray[i], 0); // do not repaint since we're drawing more stuff on top of this layer
     }
-    set_graph_callback_to_ram_1();
-    //repaint_screen_lines(0, VIDEO_Y);
-    repaint_screen();
-}
 
-/* void spawnLayer(Layer_ *layer, Window_ *window)
-{
-
-    if (!addLayerToWindow(layer, window))
+    // render window name
+    if (window->nameVisible)
     {
 
-        initializeLayer(layer);
+        set_bg_color(getLongColour(COLOR_SH_BLACK));
+        set_fg_color(getLongColour(COLOR_SH_WHITE));
+        text_out_center(window->name, VIDEO_X / 2, 2);
     }
-} */
+
+    //set_graph_callback_to_ram_1();
+    //repaint_screen_lines(0, VIDEO_Y);
+    
+    if(repaint)
+        repaint_screen();
+}
+
+short setWindowName(char *name, Window_ *window)
+{
+
+    window->nameVisible = 1;
+
+    return (short)_strcpy(window->name, name);
+}
 
 short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
 {
@@ -141,6 +156,19 @@ short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
     }
 }
 
+void destroyWindow(Window_ *window)
+{
+
+    short i = window->layerIndex;
+
+    while (i != 0)
+    {
+
+        destroyLayer(window->layerArray[i]);
+        i--;
+    }
+}
+
 Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
 {
 
@@ -157,15 +185,11 @@ Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
         window->layerArray[window->layerIndex] = layer;
         window->layerIndex++;
 
+        layer->visible = 1; // layers visible by default
+
         return layer; // returning pointer
     }
 }
-
-void setLayerTextBox(Layer_ *layer, TextBox_ tbox)
-{
-
-    layer->textBox = tbox;
-};
 
 void initializeLayer(Layer_ *layer)
 {
@@ -180,11 +204,6 @@ short getCurrentLayerIndex(Window_ *window)
 
     return window->layerIndex;
 }
-
-/* Window_ *getCurrentWindow(app_data_t *app_data) {
-
-    return(&app_data->mainWindow);
-} */
 
 short findHighestOpaqueLayer(Window_ *window)
 {
@@ -204,18 +223,18 @@ void processTap(Layer_ *layer, int x, int y)
 {
 
     short i;
-    Button_ temp;
+    Button_ *temp;
     //Layer_ *layer = &window->layerArray[window->layerIndex];
 
     for (i = 0; i < layer->buttonIndex; i++)
     {
         temp = layer->buttonArray[i];
         // was the tap inside the button?
-        if (temp.topLeft.x < x && temp.bottomRight.x > x && temp.topLeft.y < y && temp.bottomRight.y > y)
+        if (temp->topLeft.x < x && temp->bottomRight.x > x && temp->topLeft.y < y && temp->bottomRight.y > y)
         {
             //vibrate(1, 50, 0); // vibrate if successful
             // set_close_timer(5); // paramose il culo
-            temp.callbackFunction(layer, i);
+            temp->callbackFunction(layer, i);
         }
     }
 }
@@ -239,11 +258,12 @@ Layer_ *createLayer(void)
 void destroyLayer(Layer_ *layer)
 {
 
-#ifdef __SIMULATION__
-    free(layer);
-#else
+    short i = 0;
+
+    for (i = 0; i < layer->buttonIndex; i++)
+        vPortFree(layer->buttonArray[i]);
+
     vPortFree(layer);
-#endif
 }
 
 void refreshLayer(Layer_ *layer, short repaint)
@@ -257,10 +277,10 @@ void refreshLayer(Layer_ *layer, short repaint)
     for (i = 0; i < layer->buttonIndex; i++)
     {
 
-        drawButton(&layer->buttonArray[i]);
+        drawButton(layer->buttonArray[i]);
     }
 
-    drawTextBox(&layer->textBox);
+    //drawTextBox(&layer->textBox);
 
     if (repaint)
         //repaint_screen_lines(0, VIDEO_Y);
@@ -355,7 +375,7 @@ Button_ mirrorInDirectionButton(Button_ *button, Way_ dir)
     return temp;
 }
 
-void moveInDirectionButton(Button_ *button, Way_ dir, short separation)
+/* void moveInDirectionButton(Button_ *button, Way_ dir, short separation)
 {
 
     //Button_ temp = *button;
@@ -411,20 +431,54 @@ void moveInDirectionButton(Button_ *button, Way_ dir, short separation)
         button->bottomRight.y = 0;
 
     //return temp;
-}
-
-/* void spawnButton(Button_ *button, Layer_ *layer)
-{
-
-    if (!addButtonToLayer(button, layer))
-    {
-
-        drawButton(button);
-    }
 } */
 
-short addButtonToLayer(Button_ *button, Layer_ *layer)
+void movePoint(Point_ *point, Way_ dir, short space)
 {
+
+    switch (dir)
+    {
+
+    case UP:
+
+        point->y -= space;
+        break;
+    case DOWN:
+
+        point->y += space;
+        break;
+    case LEFT:
+
+        point->x -= space;
+        break;
+    case RIGHT:
+
+        point->x += space;
+        break;
+    
+    default:
+    {};
+    }
+
+    if(point->x < 0)
+        point->x = 0;
+    
+    else if(point->x > VIDEO_X)
+        point->x = VIDEO_X;
+
+    if(point->y < 0)
+        point->y = 0;
+    
+    if(point->y > VIDEO_Y)
+        point->y = VIDEO_Y;
+    
+    return;
+}
+
+Button_ *addButtonToLayer(Layer_ *layer)
+{
+
+    Button_ *button;
 
     if (layer->buttonIndex >= MAX_NUM_BUTTONS)
     {
@@ -434,14 +488,15 @@ short addButtonToLayer(Button_ *button, Layer_ *layer)
     }
     else
     { // add button to layer
-        layer->buttonArray[layer->buttonIndex] = *button;
+        button = pvPortMalloc(sizeof(Button_));
+        layer->buttonArray[layer->buttonIndex] = button;
         layer->buttonIndex++;
-        return 0;
+        return button;
     }
 }
 
-void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label, short border,
-                short filling, short text, void *callbackFunction)
+void setButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label, short border,
+                short filling, short text, void *callbackFunction, Style_t style)
 { // populating the struct
 
     button->topLeft.x = topLeft.x;
@@ -453,7 +508,7 @@ void initButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label
     button->filling = filling;
     button->textColour = text;
     button->callbackFunction = callbackFunction;
-    button->params.style = BUTTON_STYLE_ROUNDED_NOBORDER;
+    button->params.style = style;
 }
 
 void drawButton(Button_ *button) // graphics of the button

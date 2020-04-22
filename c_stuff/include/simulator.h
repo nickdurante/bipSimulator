@@ -24,6 +24,8 @@
 #define MAX_SIZE_BUTTON_LABEL 20
 #define MAX_SIZE_TEXT_BOX 120
 
+#define MAX_SIZE_WINDOW_LABEL 30
+
 #define MAX_NUM_LAYERS 2
 
 #define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
@@ -104,12 +106,13 @@ typedef struct TextBox_
     short colour,
         background;
 
+    short visible;
+
 } TextBox_;
 
 typedef struct LayerParams_
 {
 
-    //char overlay; // 1: something was drawn on top of the layer and it should be refreshed
     short refreshDelay;
 
 } LayerParams_;
@@ -117,12 +120,13 @@ typedef struct LayerParams_
 typedef struct Layer_
 {
 
-    Button_ buttonArray[MAX_NUM_BUTTONS]; // all buttons
+    Button_ *buttonArray[MAX_NUM_BUTTONS]; // all buttons
     unsigned short buttonIndex;                 // current valid button, init=0
 
     short backgroundColour; // background for the current Layer
     short visible;          // is the layer visible?
-    TextBox_ textBox;       // textbox for general usage
+
+    TextBox_ textBox;                       // textbox for general usage
 
     LayerParams_ params; // holding state of the layer
     void (*callbackFunction)();
@@ -130,7 +134,9 @@ typedef struct Layer_
 
 typedef struct Window_
 {
-
+    char name[MAX_SIZE_WINDOW_LABEL];
+    char nameVisible;
+    
     Layer_ *layerArray[MAX_NUM_LAYERS];
     short layerIndex;
 
