@@ -2,9 +2,10 @@ var canvas = document.getElementById("bipCanvas");
 var ctx = canvas.getContext('2d');
 
 function write_text(text, color, x, y) {
-  ctx.font = "80px Arial";
+  ctx.font = "70px Arial";
   ctx.fillStyle = color;
-  ctx.textBaseline = 'top';
+  ctx.textAlign = "left";
+  ctx.textBaseline = 'left';
   var lineheight = 70;
   var lines = text.split('\n');
   for (var i = 0; i<lines.length; i++)
@@ -13,7 +14,7 @@ function write_text(text, color, x, y) {
 }
 
 function write_text_center(text, color, x, y) {
-  ctx.font = "80px Arial";
+  ctx.font = "70px Arial";
   ctx.fillStyle = color;
   ctx.textAlign = "center";
   ctx.textBaseline = 'top';
