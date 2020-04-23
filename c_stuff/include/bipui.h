@@ -27,8 +27,12 @@ v.0.0
 #ifndef __SIMULATION__
 
 #define MAX_NUM_BUTTONS 8
-#define MAX_SIZE_BUTTON_LABEL 20
+#define MAX_SIZE_BUTTON_LABEL 15
 #define MAX_SIZE_TEXT_BOX 120
+
+#define MAX_SIZE_WINDOW_LABEL 30
+
+#define MAX_NUM_WINDOWS 10
 
 #define MAX_NUM_LAYERS 2
 
@@ -66,7 +70,8 @@ typedef enum Way_
     UP,
     DOWN,
     LEFT,
-    RIGHT
+    RIGHT,
+    CENTER
 
 } Way_;
 
@@ -88,6 +93,8 @@ typedef struct Button_
         filling,
         textColour;
 
+    char visible;
+
     void (*callbackFunction)();
 
     ButtonParams_ params; // style, state..
@@ -105,12 +112,13 @@ typedef struct TextBox_
     short colour,
         background;
 
+    char visible;
+
 } TextBox_;
 
 typedef struct LayerParams_
 {
 
-    //char overlay; // 1: something was drawn on top of the layer and it should be refreshed
     short refreshDelay;
 
 } LayerParams_;
@@ -118,12 +126,13 @@ typedef struct LayerParams_
 typedef struct Layer_
 {
 
-    Button_ buttonArray[MAX_NUM_BUTTONS]; // all buttons
-    unsigned short index;                 // current valid button, init=0
+    Button_ *buttonArray[MAX_NUM_BUTTONS]; // all buttons
+    unsigned short buttonIndex;                 // current valid button, init=0
 
     short backgroundColour; // background for the current Layer
-    short visible;          // is the layer visible?
-    TextBox_ textBox;       // textbox for general usage
+    char visible;          // is the layer visible?
+
+    TextBox_ *textBox;                       // textbox for general usage
 
     LayerParams_ params; // holding state of the layer
     void (*callbackFunction)();
@@ -131,21 +140,31 @@ typedef struct Layer_
 
 typedef struct Window_
 {
+    int neighbors[4];      //pointers to neighboring windows (up. down, left, right)
 
-    Layer_ layerArray[MAX_NUM_LAYERS];
-    short index;
+    char name[MAX_SIZE_WINDOW_LABEL];
+    char nameVisible;
+    
+    Layer_ *layerArray[MAX_NUM_LAYERS];
+    short layerIndex;
 
 } Window_;
 typedef struct Viewport_
 {
 
-    Layer_ *active; // layer currently drawn
-    Layer_ *up;     // pointers to layers on all sides
-    Layer_ *down;
-    Layer_ *left;
-    Layer_ *right;
+    Window_ *windowArray[MAX_NUM_WINDOWS];
+    char windowIndex;
+
+    Window_ *active;
 
 } Viewport_;
+
+typedef struct Game_
+{
+
+    unsigned short score;
+    unsigned short record;
+} Game_;
 
 typedef struct app_data_t
 {
