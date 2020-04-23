@@ -26,9 +26,9 @@ v.0.0
 
 #ifndef __SIMULATION__
 
-#define MAX_NUM_BUTTONS 8
+##define MAX_NUM_BUTTONS 8
 #define MAX_SIZE_BUTTON_LABEL 15
-#define MAX_SIZE_TEXT_BOX 120
+#define MAX_SIZE_TEXT_BOX 180
 
 #define MAX_SIZE_WINDOW_LABEL 30
 
@@ -38,7 +38,7 @@ v.0.0
 
 #define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
 
-#define DEFAULT_TEXT_HEIGHT 25
+#define DEFAULT_TEXT_HEIGHT 20
 
 typedef struct Point_
 {
@@ -113,13 +113,14 @@ typedef struct TextBox_
         background;
 
     char visible;
-
+    char centerText;        // 1: render text centered, 0: render normally
+    
 } TextBox_;
 
 typedef struct LayerParams_
 {
 
-    short refreshDelay;
+    short state;
 
 } LayerParams_;
 
@@ -127,26 +128,28 @@ typedef struct Layer_
 {
 
     Button_ *buttonArray[MAX_NUM_BUTTONS]; // all buttons
-    unsigned short buttonIndex;                 // current valid button, init=0
+    unsigned short buttonIndex;            // current valid button, init=0
 
     short backgroundColour; // background for the current Layer
-    char visible;          // is the layer visible?
+    char visible;           // is the layer visible?
 
-    TextBox_ *textBox;                       // textbox for general usage
+    TextBox_ *textBox; // textbox for general usage
 
     LayerParams_ params; // holding state of the layer
-    void (*callbackFunction)();
+    //void (*callbackFunction)();
 } Layer_;
 
 typedef struct Window_
 {
-    int neighbors[4];      //pointers to neighboring windows (up. down, left, right)
+    int neighbors[4]; //pointers to neighboring windows (up. down, left, right)
 
     char name[MAX_SIZE_WINDOW_LABEL];
     char nameVisible;
-    
+
     Layer_ *layerArray[MAX_NUM_LAYERS];
-    short layerIndex;
+    char layerIndex;
+
+    void (*callbackFunction)();
 
 } Window_;
 typedef struct Viewport_
@@ -182,6 +185,11 @@ const static Point_ BIPUI_TOP_LEFT_POINT = {
     DEFAULT_BORDER_THICKNESS,
     DEFAULT_BORDER_THICKNESS};
 
+const static Point_ BIPUI_UNDER_WINDOW_LABEL_LEFT_POINT = {
+
+    DEFAULT_BORDER_THICKNESS,
+    DEFAULT_BORDER_THICKNESS + DEFAULT_TEXT_HEIGHT};
+
 const static Point_ BIPUI_TOP_RIGHT_POINT = {
 
     DEFAULT_BORDER_THICKNESS,
@@ -197,6 +205,16 @@ const static Point_ BIPUI_BOTTOM_RIGHT_POINT = {
     VIDEO_Y - DEFAULT_BORDER_THICKNESS,
     VIDEO_X - DEFAULT_BORDER_THICKNESS};
 
+const static Point_ BIPUI_CENTER_LEFT_POINT = {
+
+    DEFAULT_BORDER_THICKNESS,
+    VIDEO_X / 2};
+
+const static Point_ BIPUI_CENTER_RIGHT_POINT = {
+
+    VIDEO_Y - DEFAULT_BORDER_THICKNESS,
+    VIDEO_X / 2};
+
 const static TextBox_ DEFAULT_TEXTBOX = {
 
     {4, 4},
@@ -205,7 +223,9 @@ const static TextBox_ DEFAULT_TEXTBOX = {
     "TEXTBOX SAMPLE",
 
     COLOR_SH_RED,
-    COLOR_SH_BLACK};
+    COLOR_SH_BLACK, 
+    
+    1};
 
 const static ButtonParams_ DEFAULT_BUTTON_PARAMETERS = {
 
@@ -330,6 +350,7 @@ void setActiveOverlayValue(Layer_ *layer);
 Window_ *addWindowToViewport(Viewport_ *vp);
 short removeWindowFromViewport(Viewport_ *vp);
 Window_ *createWindow(void);
+void destroyWindow(Window_ *window);
 void initializeWindow(Window_ *window);
 void refreshWindow(Window_ *window, char repaint);
 void linkWindows(Window_ *windowReference, Way_ way, Window_ *windowToLink);

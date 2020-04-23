@@ -496,6 +496,11 @@ int _strcpy(char *destptr, const char *srcptr) {
     return strcpy(destptr, srcptr);
 }
 
+int _strncpy(char *destptr, const char *srcptr, int num) {
+
+    return strncpy(destptr, srcptr, num);
+}
+
 void set_display_state_value(int state_1, int state) {
 
     // don't do anything for now

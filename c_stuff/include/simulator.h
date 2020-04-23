@@ -22,7 +22,7 @@
 
 #define MAX_NUM_BUTTONS 8
 #define MAX_SIZE_BUTTON_LABEL 15
-#define MAX_SIZE_TEXT_BOX 120
+#define MAX_SIZE_TEXT_BOX 180
 
 #define MAX_SIZE_WINDOW_LABEL 30
 
@@ -32,11 +32,7 @@
 
 #define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
 
-#define DEFAULT_TEXT_HEIGHT 25
-
-#define __SIMULATION__
-
-#include <bipui.h>
+#define DEFAULT_TEXT_HEIGHT 20
 
 typedef struct Point_
 {
@@ -111,13 +107,14 @@ typedef struct TextBox_
         background;
 
     char visible;
-
+    char centerText;        // 1: render text centered, 0: render normally
+    
 } TextBox_;
 
 typedef struct LayerParams_
 {
 
-    short refreshDelay;
+    short state;
 
 } LayerParams_;
 
@@ -125,26 +122,28 @@ typedef struct Layer_
 {
 
     Button_ *buttonArray[MAX_NUM_BUTTONS]; // all buttons
-    unsigned short buttonIndex;                 // current valid button, init=0
+    unsigned short buttonIndex;            // current valid button, init=0
 
     short backgroundColour; // background for the current Layer
-    char visible;          // is the layer visible?
+    char visible;           // is the layer visible?
 
-    TextBox_ *textBox;                       // textbox for general usage
+    TextBox_ *textBox; // textbox for general usage
 
     LayerParams_ params; // holding state of the layer
-    void (*callbackFunction)();
+    //void (*callbackFunction)();
 } Layer_;
 
 typedef struct Window_
 {
-    int neighbors[4];      //pointers to neighboring windows (up. down, left, right)
+    int neighbors[4]; //pointers to neighboring windows (up. down, left, right)
 
     char name[MAX_SIZE_WINDOW_LABEL];
     char nameVisible;
-    
+
     Layer_ *layerArray[MAX_NUM_LAYERS];
-    short layerIndex;
+    char layerIndex;
+
+    void (*callbackFunction)();
 
 } Window_;
 typedef struct Viewport_
@@ -421,6 +420,7 @@ void vibrate(int count, int on_ms, int off_ms);
 int _memclr(void *buf, int len);
 void vPortFree(void *pv);
 int _strcpy(char *destptr, const char *srcptr);
+int _strncpy(char *destptr, const char *srcptr, int num);
 void set_display_state_value(int state_1, int state);
 int set_graph_callback_to_ram_1(void);
 int show_watchface(void);
@@ -429,7 +429,7 @@ void reg_menu(void *regmenu_, int param);
 int get_var_menu_overlay(void);
 
 app_data_t *get_app_data_ptr(void);
-int set_app_data_ptr(app_data_t * app_data);
+int set_app_data_ptr(app_data_t *app_data);
 int _sprintf(char *buf, const char *format, ...);
 
 int show_menu_animate(void *show_menu_function, int param, int animate);

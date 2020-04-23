@@ -22,7 +22,7 @@
 #include <ws.h>
  
 
-#include "bipos-reactGame.h"
+#include "bipos-layersdemo.h"
 #include <pthread.h>
 
 #define WS_PORT 6789

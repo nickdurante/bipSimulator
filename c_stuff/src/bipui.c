@@ -3,7 +3,7 @@
 #include <simulator.h>
 #endif
 
-#include <bipui.h>
+#include "bipui.h"
 
 void blank_screen(void)
 {
@@ -56,9 +56,18 @@ void drawTextBox(TextBox_ *box)
     set_bg_color(getLongColour(box->background));
     set_fg_color(getLongColour(box->colour));
 
-    text_out_center(box->body,                                      // the text
+    draw_filled_rect_bg(box->topLeft.x, box->topLeft.y,
+                        box->bottomRight.x, box->bottomRight.y);
+
+    if(box->centerText) {
+
+        text_out_center(box->body,                                      // the text
                     (int)(box->topLeft.x + box->bottomRight.x) / 2, // median
                     (int)box->topLeft.y - 2);                       // slightly up
+    } else {
+
+        text_out(box->body, (int) box->topLeft.x, (int) box->topLeft.y);
+    }
 }
 
 void refreshWindow(Window_ *window, char repaint)
@@ -83,8 +92,12 @@ void refreshWindow(Window_ *window, char repaint)
     if (window->nameVisible)
     {
 
-        set_bg_color(getLongColour(COLOR_SH_BLACK));
-        set_fg_color(getLongColour(COLOR_SH_WHITE));
+        set_bg_color(getLongColour(window->layerArray[0]->backgroundColour));
+        if (window->layerArray[0]->backgroundColour == COLOR_SH_WHITE || window->layerArray[0]->backgroundColour == COLOR_SH_YELLOW)
+            set_fg_color(getLongColour(COLOR_SH_BLACK));
+        else
+            set_fg_color(getLongColour(COLOR_SH_WHITE));
+
         text_out_center(window->name, VIDEO_X / 2, 2);
     }
 
@@ -142,11 +155,13 @@ Window_ *addWindowToViewport(Viewport_ *vp)
     else
     {
         window = createWindow();
-        vp->windowArray[vp->windowIndex] = window;
+        vp->windowArray[(short)vp->windowIndex] = window;
         vp->windowIndex++;
 
         return window;
     }
+
+    return 0; // should never get here
 }
 
 short removeWindowFromViewport(Viewport_ *vp)
@@ -160,7 +175,7 @@ short removeWindowFromViewport(Viewport_ *vp)
     }
     else
     {
-        destroyWindow(vp->windowArray[vp->windowIndex]);
+        destroyWindow(vp->windowArray[(short)vp->windowIndex]);
         vp->windowIndex--;
         return 0;
     }
@@ -168,28 +183,28 @@ short removeWindowFromViewport(Viewport_ *vp)
 
 void linkWindows(Window_ *windowReference, Way_ way, Window_ *windowToLink)
 {
-
+    // it's not wrong, if you swipe "UP", you should go to the "DOWN" layer
     switch (way)
     {
     case UP:
-        windowReference->neighbors[UP] = windowToLink;
-        windowToLink->neighbors[DOWN] = windowReference;
+        windowReference->neighbors[DOWN] = (int)windowToLink;
+        windowToLink->neighbors[UP] = (int)windowReference;
         break;
 
     case DOWN:
-        windowReference->neighbors[DOWN] = windowToLink;
-        windowToLink->neighbors[UP] = windowReference;
+        windowReference->neighbors[UP] = (int)windowToLink;
+        windowToLink->neighbors[DOWN] = (int)windowReference;
         break;
 
     case LEFT:
-        windowReference->neighbors[LEFT] = windowToLink;
-        windowToLink->neighbors[RIGHT] = windowReference;
+        windowReference->neighbors[RIGHT] = (int)windowToLink;
+        windowToLink->neighbors[LEFT] = (int)windowReference;
         break;
 
     case RIGHT:
-
-        windowReference->neighbors[RIGHT] = windowToLink;
-        windowToLink->neighbors[LEFT] = windowReference;
+        windowReference->neighbors[LEFT] = (int)windowToLink;
+        windowToLink->neighbors[RIGHT] = (int)windowReference;
+        break;
     default:
 
         break;
@@ -209,9 +224,11 @@ void processTap(Layer_ *layer, int x, int y)
         // was the tap inside the button?
         if (temp->topLeft.x < x && temp->bottomRight.x > x && temp->topLeft.y < y && temp->bottomRight.y > y)
         {
-            //vibrate(1, 50, 0); // vibrate if successful
-            // set_close_timer(5); // paramose il culo
-            temp->callbackFunction(layer, i);
+            vibrate(1, 50, 0); // vibrate if successful
+            if (temp->callbackFunction != 0)
+                temp->callbackFunction(layer, i);
+            else
+                printErrorText("CALLBACK UNDEFINED");
         }
     }
 }
@@ -220,8 +237,14 @@ void processSwipe(Window_ *window, char gesture)
 {
     Way_ way = (Way_)gesture - 2; // casting the gesture to way type
 
-    if (window->neighbors[way] != 0)
-        getAppData()->vp.active = (Window_ *)window->neighbors[(int)way];
+    if (window->callbackFunction != 0)
+    {
+        window->callbackFunction(window, way);
+    }
+    else
+    {
+        printErrorText("CALLBACK UNDEFINED");
+    }
 }
 
 Layer_ *createLayer(void)
@@ -265,7 +288,7 @@ void refreshLayer(Layer_ *layer, short repaint)
 
     if (layer->textBox) // uninitialized pointers == 0
         if (layer->textBox->visible)
-            drawTextBox(&layer->textBox);
+            drawTextBox(layer->textBox);
 
     if (repaint)
         //repaint_screen_lines(0, VIDEO_Y);
@@ -284,13 +307,15 @@ Layer_ *addLayerToWindow(Window_ *window) // aka "push to layer stack"
     else
     {                          // add layer to window - aka putting layer pointer in layer array
         layer = createLayer(); //malloc layer
-        window->layerArray[window->layerIndex] = layer;
+        window->layerArray[(short)window->layerIndex] = layer;
         window->layerIndex++;
 
         layer->visible = 1; // layers visible by default
 
         return layer; // returning pointer
     }
+
+    return 0; // should never get here
 }
 
 short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
@@ -304,7 +329,7 @@ short removeLayerFromWindow(Window_ *window) // aka "pop layer stack"
     }
     else
     {
-        destroyLayer(window->layerArray[window->layerIndex]); // free layer memory
+        destroyLayer(window->layerArray[(short)window->layerIndex]); // free layer memory
 
         window->layerIndex--;
         return 0;
@@ -363,7 +388,6 @@ Button_ *addButtonToLayer(Layer_ *layer)
     {
         // layer full
         printErrorText("DATABASE FULL");
-        return 1;
     }
     else
     { // add button to layer
@@ -372,6 +396,8 @@ Button_ *addButtonToLayer(Layer_ *layer)
         layer->buttonIndex++;
         return button;
     }
+
+    return (Button_ *)0; // should never get here
 }
 
 void setButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label, short border,
@@ -535,4 +561,5 @@ void printErrorText(char *error)
     _strcpy(tempText.body, error);
 
     drawTextBox(&tempText);
+    repaint_screen();
 }
