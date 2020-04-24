@@ -20,7 +20,7 @@ simSocket.onmessage = function(e) {
 
     document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
     if (data["action"] === "repaint_screen") {
-        run_action_fifo();
+      run_action_fifo();
     } else if (data["action"] === "set_redraw_time") {
       if (data["cmd"] == 1) {
 
@@ -30,12 +30,22 @@ simSocket.onmessage = function(e) {
         console.log("Set timer to false")
         clearTimeout(timer);
       }
-    } else if (data["action"] === "vibration"){
-      var btn =  document.getElementById("vibration_btn");
-      if (data["status"] === "on"){
-        btn.style.display = "block";
-      }else{
-        btn.style.display = "none";
+    } else if (data["action"] === "vibration") {
+
+      for (var i = 0; i < data["periods"]; i++) {
+
+        setTimeout(function() {
+          console.log("BZZZZ")
+          var btn = document.getElementById("vibration_btn");
+          btn.style.display = "block";
+        }, i * (data["ms_on"] + data["ms_off"]));
+
+        setTimeout(function() {
+          console.log("NO BZZZZ")
+          var btn = document.getElementById("vibration_btn");
+          btn.style.display = "none";
+        }, (i + 1) * data["ms_on"] + i * data["ms_off"]);
+
       }
 
     } else {
@@ -47,6 +57,9 @@ simSocket.onmessage = function(e) {
   }
 
 };
+
+
+
 
 
 function run_action_fifo() {

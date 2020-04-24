@@ -19,7 +19,7 @@ The simulator and the app device communicate using websockets using the followin
 | draw_filled_rect     | app  | {"from": "app", "action":"draw_filled_rect", "x1":X1, "y1":Y1, "x2":X2, "y2":Y2}    |
 | draw_filled_rect_bg  | app  | {"from": "app", "action":"draw_filled_rect_bg", "x1":X1, "y1":Y1, "x2":X2, "y2":Y2} |
 | set_update_period    | app  | {"from": "app", "action":"set_redraw_time", "cmd":int_0_1, "time":time_MS           |
-| vibration            | app  | {"from": "app", "action": "vibration", "status": "on/off"}                          |
+| vibration            | app  | {"from": "app", "action": "vibration", "periods": periods, "ms_on": msON, "ms_off": msOFF}                          |
 |                      |      |                                                                                     |
 | click                | sim  | {"from": "sim", "action":"1", "x":X, "y":Y}                                         |
 | swipe_up             | sim  | {"from": "sim", "action":"2"}                                                       |
