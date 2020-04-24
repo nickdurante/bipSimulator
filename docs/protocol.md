@@ -18,10 +18,13 @@ The simulator and the app device communicate using websockets using the followin
 | draw_vertical_line   | app  | {"from": "app", "action":"draw_vertical_line", "x":X, "y1": Y1, "y2":Y2}            |
 | draw_filled_rect     | app  | {"from": "app", "action":"draw_filled_rect", "x1":X1, "y1":Y1, "x2":X2, "y2":Y2}    |
 | draw_filled_rect_bg  | app  | {"from": "app", "action":"draw_filled_rect_bg", "x1":X1, "y1":Y1, "x2":X2, "y2":Y2} |
-| set_update_period    | app  | {"from": "app", "action":"set_redraw_time", "cmd":int_0_1, "time":time_MS          |
+| set_update_period    | app  | {"from": "app", "action":"set_redraw_time", "cmd":int_0_1, "time":time_MS           |
+| vibration            | app  | {"from": "app", "action": "vibration", "status": "on/off"}                          |
 |                      |      |                                                                                     |
 | click                | sim  | {"from": "sim", "action":"1", "x":X, "y":Y}                                         |
 | swipe_up             | sim  | {"from": "sim", "action":"2"}                                                       |
 | swipe_down           | sim  | {"from": "sim", "action":"3"}                                                       |
 | swipe_left           | sim  | {"from": "sim", "action":"4"}                                                       |
 | swipe_right          | sim  | {"from": "sim", "action":"5"}                                                       |
+| BTN press            | sim  | {"from": "sim", "action":"6"}                                                       |
+| BTN long press       | sim  | {"from": "sim", "action":"7"}                                                       |

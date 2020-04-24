@@ -30,6 +30,14 @@ simSocket.onmessage = function(e) {
         console.log("Set timer to false")
         clearTimeout(timer);
       }
+    } else if (data["action"] === "vibration"){
+      var btn =  document.getElementById("vibration_btn");
+      if (data["status"] === "on"){
+        btn.style.display = "block";
+      }else{
+        btn.style.display = "none";
+      }
+
     } else {
 
       // put in the FIFO queue
