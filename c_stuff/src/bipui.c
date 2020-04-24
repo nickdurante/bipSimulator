@@ -92,7 +92,7 @@ void refreshWindow(Window_ *window, char repaint)
     if (window->nameVisible)
     {
 
-        set_bg_color(getLongColour(window->layerArray[0]->backgroundColour));
+        set_bg_color(getLongColour(window->layerArray[0]->backgroundColour)); // for legibility
         if (window->layerArray[0]->backgroundColour == COLOR_SH_WHITE || window->layerArray[0]->backgroundColour == COLOR_SH_YELLOW)
             set_fg_color(getLongColour(COLOR_SH_BLACK));
         else
@@ -106,6 +106,15 @@ void refreshWindow(Window_ *window, char repaint)
 
     if (repaint)
         repaint_screen();
+}
+
+Window_ *getWindowByIndex(short index) {
+
+    short currentIndex = getAppData()->vp.windowIndex;
+
+    if(index < currentIndex)
+        return getAppData()->vp.windowArray[index];
+
 }
 
 short setWindowName(char *name, Window_ *window)
@@ -401,7 +410,7 @@ Button_ *addButtonToLayer(Layer_ *layer)
 }
 
 void setButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label, short border,
-               short filling, short text, void *callbackFunction, Style_t style)
+               short filling, short textColour, void *callbackFunction, Style_t style)
 { // populating the struct
 
     button->topLeft.x = topLeft.x;
@@ -411,7 +420,7 @@ void setButton(Button_ *button, Point_ topLeft, Point_ bottomRight, char *label,
     _strcpy(button->label, label);
     button->border = border;
     button->filling = filling;
-    button->textColour = text;
+    button->textColour = textColour;
     button->callbackFunction = callbackFunction;
     button->params.style = style;
 
@@ -476,7 +485,10 @@ void drawButton(Button_ *button) // graphics of the button
     };
     }
 
-    set_fg_color(getLongColour(temp.textColour)); // Text is universal for now
+    if(temp.textColour != temp.filling)
+        set_fg_color(getLongColour(temp.textColour)); 
+    else
+        set_fg_color(getLongColour(~temp.textColour));
 
     text_out_center(temp.label,                                     // the text
                     (int)(temp.topLeft.x + temp.bottomRight.x) / 2, // median

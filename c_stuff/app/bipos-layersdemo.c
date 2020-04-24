@@ -6,13 +6,13 @@
 	
 */
 
-#define CENTER_WINDOW 0
-#define LEFT_WINDOW 1
-#define RIGHT_WINDOW 2
-#define UP_WINDOW 3
-#define DOWN_WINDOW 4
-#define SETTINGS_WINDOW 5
-#define HELP_WINDOW 6
+#define CENTER_WINDOW_INDEX 0
+#define LEFT_WINDOW_INDEX 1
+#define RIGHT_WINDOW_INDEX 2
+#define UP_WINDOW_INDEX 3
+#define DOWN_WINDOW_INDEX 4
+#define SETTINGS_WINDOW_INDEX 5
+#define HELP_WINDOW_INDEX 6
 
 #include "bipos-layersdemo.h"
 
@@ -48,9 +48,9 @@ int main(int param0, char **argv)
 
 void overlayWindowCallbackFunction(Window_ *window, Way_ way)
 {
-    Window_ *centerWindow = getAppData()->vp.windowArray[CENTER_WINDOW];
+    Window_ *centerWindow = getAppData()->vp.windowArray[CENTER_WINDOW_INDEX];
 
-    if (way = DOWN)
+    if (way == DOWN)
         getAppData()->vp.active = centerWindow;
 
     refreshWindow(getAppData()->vp.active, 1);
@@ -62,9 +62,15 @@ void simpleWindowCallbackFunction(Window_ *window, Way_ way)
         getAppData()->vp.active = (Window_ *)window->neighbors[(int)way];
 }
 
+void changeWindowColourCallbackFunction(Layer_ *layer, short button_id){
+
+    short i = button_id;
+    i++;
+};
+
 void goToSettingsCallbackFunction(Layer_ *layer, short button_id)
 {
-    Window_ *settingsWindow = getAppData()->vp.windowArray[SETTINGS_WINDOW];
+    Window_ *settingsWindow = getAppData()->vp.windowArray[SETTINGS_WINDOW_INDEX];
 
     getAppData()->vp.active = settingsWindow;
 
@@ -73,7 +79,7 @@ void goToSettingsCallbackFunction(Layer_ *layer, short button_id)
 
 void goToHelpCallbackFunction(Layer_ *layer, short button_id)
 {
-    Window_ *tempWindow = getAppData()->vp.windowArray[HELP_WINDOW];
+    Window_ *tempWindow = getAppData()->vp.windowArray[HELP_WINDOW_INDEX];
 
     getAppData()->vp.active = tempWindow;
 
@@ -87,15 +93,37 @@ void layerSettingsConstructor(Layer_ *layerSettings)
 
     setLayerBackground(layerSettings, COLOR_SH_PURPLE);
 
-    /* 	TextBox_ tempText;
+    Button_ *tempButton = addButtonToLayer(layerSettings);  // button 0
 
-	tempText.topLeft = BIPUI_TOP_LEFT_POINT;
-	tempText.bottomRight = BIPUI_BOTTOM_RIGHT_POINT;
-	_strcpy(tempText.body, "Help");
-	tempText.colour = COLOR_SH_WHITE;
-	tempText.background = COLOR_SH_BLACK; */
+    setButton(tempButton,
+        BIPUI_BOTTOM_LEFT_POINT,
+        BIPUI_BOTTOM_LEFT_POINT,
+        getWindowByIndex(CENTER_WINDOW_INDEX)->name,
+        COLOR_SH_WHITE,
+        getWindowByIndex(CENTER_WINDOW_INDEX)->layerArray[0]->backgroundColour,
+        COLOR_SH_BLACK,
+        changeWindowColourCallbackFunction,
+        BUTTON_STYLE_SQUARED_NOBORDER);
 
-    //setLayerTextBox(layerHelp, tempText);
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT);
+    movePoint(&tempButton->bottomRight, RIGHT, DEFAULT_BUTTON_WIDTH);
+
+    tempButton = addButtonToLayer(layerSettings);           // button 1
+
+    setButton(tempButton,
+        BIPUI_BOTTOM_RIGHT_POINT,
+        BIPUI_BOTTOM_RIGHT_POINT,
+        getWindowByIndex(LEFT_WINDOW_INDEX)->name,
+        COLOR_SH_WHITE,
+        getWindowByIndex(LEFT_WINDOW_INDEX)->layerArray[0]->backgroundColour,
+        COLOR_SH_BLACK,
+        changeWindowColourCallbackFunction,
+        BUTTON_STYLE_SQUARED_NOBORDER);
+
+    movePoint(&tempButton->topLeft, LEFT, DEFAULT_BUTTON_HEIGHT);
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_WIDTH); 
+
+
 }
 
 void layerHelpConstructor(Layer_ *layerHelp)
@@ -113,7 +141,7 @@ void layerHelpConstructor(Layer_ *layerHelp)
     tbox->visible = 1;
     tbox->centerText = 0;
 
-    _strncpy(tbox->body, "All the windows\nwere defined at\nruntime. The \"Settings\"\n menu can change the\nbackground colour of\nany of the other\nwindows", MAX_SIZE_TEXT_BOX);
+    _strncpy(tbox->body, "All the windows were\ndefined in begin(). \n\nUsing the \"Settings\"\nbutton you can change \nthe background of any of \nthe other windows.", MAX_SIZE_TEXT_BOX);
     
     layerHelp->textBox = tbox;
 
@@ -308,13 +336,8 @@ void show_screen(void *param0)
 
 void key_press_screen()
 {
-#ifdef __SIMULATION__
-    app_data_t *app_data = get_app_data_ptr();
-    app_data_t **app_data_p = &app_data;
-#else
-    app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-    app_data_t *app_data = *app_data_p;             //	pointer to screen data
-#endif
+    
+    app_data_t *app_data = getAppData();
 
     // destroy all elements, memory leaks are bad
     destroyViewport(&app_data->vp);
@@ -326,26 +349,16 @@ void key_press_screen()
 void refreshScreen()
 { // triggered by set_update_period
 
-#ifdef __SIMULATION__
-    app_data_t *app_data = get_app_data_ptr();
-    app_data_t **app_data_p = &app_data;
-#else
-    app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-    app_data_t *app_data = *app_data_p;             //	pointer to screen data
-#endif
+    app_data_t *app_data = getAppData();
+
     refreshWindow(app_data->vp.active, 1);
     vibrate(2, 50, 150);
 }
 
 int interactionHandler(void *param)
 {
-#ifdef __SIMULATION__
-    app_data_t *app_data = get_app_data_ptr();
-    app_data_t **app_data_p = &app_data;
-#else
-    app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-    app_data_t *app_data = *app_data_p;             //	pointer to screen data
-#endif
+    
+    app_data_t *app_data = getAppData();
 
     struct gesture_ *gest = param;
     int result = 0;
