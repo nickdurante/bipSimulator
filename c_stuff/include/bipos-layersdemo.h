@@ -24,6 +24,7 @@ void refreshScreen();
 void begin(app_data_t *app_data);
 void simpleWindowCallbackFunction(Window_ *window, Way_ way);
 void settingsWindowCallbackFunction(Window_ *window, Way_ way);
+void changeWindowColourCallbackFunction(Layer_ *layer, short button_id);
 
 void layerMainConstructor(Layer_ *layer);
 void layerHelpConstructor(Layer_ *layer);
