@@ -24,22 +24,20 @@
 
   <div style="display:flex; flex-wrap:wrap;">
     <!-- original is 176x176, scaling by 4 704x704-->
-    <div style="flex: 50%;">
+    <div style="flex: auto">
       <canvas id="bipCanvas" style="border: 1px black solid;" width="704" height="704"></canvas>
-      <div>
+
+    </div>
+    <div style="flex: 50%;">
+      <h2 style="display:flex; justify-content:center">User actions</h2>
+      <div style="margin-top:-30px">
         <button onclick="send_button_ws(2)">Swipe up</button>
         <button onclick="send_button_ws(3)">Swipe down</button>
         <button onclick="send_button_ws(4)">Swipe left</button>
         <button onclick="send_button_ws(5)">Swipe right</button>
-      </div>
-      <div>
         <button onclick="send_button_ws(6)">BTN press</button>
         <button onclick="send_button_ws(7)">BTN long press</button>
-
       </div>
-
-    </div>
-    <div style="flex: 50%;">
       <h2 style="display:flex; justify-content:center">WS messages</h2>
       <div style="overflow: auto; max-height: 40rem">
         <code id="chat-log"></code>
