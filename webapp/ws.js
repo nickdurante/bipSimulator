@@ -18,7 +18,7 @@ simSocket.onmessage = function(e) {
   // message from from bip
   if (data["from"] === "app") {
 
-    document.getElementById("chat-log").innerHTML += JSON.stringify(data) + "<br>";
+    document.getElementById("chat-log").innerHTML = JSON.stringify(data) + "<br>" + document.getElementById("chat-log").innerHTML;
     if (data["action"] === "repaint_screen") {
       run_action_fifo();
     } else if (data["action"] === "set_redraw_time") {
@@ -150,7 +150,7 @@ function send_button_ws(id) {
   });
 
   simSocket.send(outString);
-  document.getElementById("chat-log").innerHTML += outString + "<br>";
+  document.getElementById("chat-log").innerHTML = outString + "<br>" + document.getElementById("chat-log").innerHTML;
 
 };
 
