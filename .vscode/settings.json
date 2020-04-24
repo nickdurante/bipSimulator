@@ -15,6 +15,7 @@
         "limits": "c",
         "*.tcc": "c",
         "typeinfo": "c",
-        "cstdbool": "c"
+        "cstdbool": "c",
+        "bipos-layersdemo.h": "c"
     }
 }

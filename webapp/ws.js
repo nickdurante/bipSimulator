@@ -153,7 +153,7 @@ function getCursorPosition(canvas, event) {
   });
 
   simSocket.send(outString);
-  document.getElementById("chat-log").innerHTML += outString + "<br>";
+  document.getElementById("chat-log").innerHTML = outString + "<br>" + document.getElementById("chat-log").innerHTML;
 }
 
 

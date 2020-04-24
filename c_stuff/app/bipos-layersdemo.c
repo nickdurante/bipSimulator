@@ -64,8 +64,13 @@ void simpleWindowCallbackFunction(Window_ *window, Way_ way)
 
 void changeWindowColourCallbackFunction(Layer_ *layer, short button_id){
 
-    short i = button_id;
-    i++;
+    short nextColour = (unsigned short) rand() % 7; // colour number
+
+    layer->buttonArray[button_id]->filling = nextColour;
+    getAppData()->vp.windowArray[button_id]->layerArray[0]->backgroundColour = nextColour;    
+
+    refreshWindow(getAppData()->vp.active, 1);
+
 };
 
 void goToSettingsCallbackFunction(Layer_ *layer, short button_id)
@@ -91,37 +96,90 @@ void goToHelpCallbackFunction(Layer_ *layer, short button_id)
 void layerSettingsConstructor(Layer_ *layerSettings)
 {
 
-    setLayerBackground(layerSettings, COLOR_SH_PURPLE);
+    setLayerBackground(layerSettings, COLOR_SH_BLACK);
 
-    Button_ *tempButton = addButtonToLayer(layerSettings);  // button 0
+    Button_ *tempButton;
+
+
+    tempButton = addButtonToLayer(layerSettings);           // button 0
 
     setButton(tempButton,
-        BIPUI_BOTTOM_LEFT_POINT,
-        BIPUI_BOTTOM_LEFT_POINT,
-        getWindowByIndex(CENTER_WINDOW_INDEX)->name,
+        BIPUI_UNDER_WINDOW_LABEL_LEFT_POINT,
+        BIPUI_UNDER_WINDOW_LABEL_RIGHT_POINT,
+        "Center",
         COLOR_SH_WHITE,
         getWindowByIndex(CENTER_WINDOW_INDEX)->layerArray[0]->backgroundColour,
         COLOR_SH_BLACK,
         changeWindowColourCallbackFunction,
-        BUTTON_STYLE_SQUARED_NOBORDER);
+        BUTTON_STYLE_DEFAULT_SQUARED);
 
-    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT);
-    movePoint(&tempButton->bottomRight, RIGHT, DEFAULT_BUTTON_WIDTH);
+    movePoint(&tempButton->topLeft, DOWN, DEFAULT_BUTTON_HEIGHT); 
 
-    tempButton = addButtonToLayer(layerSettings);           // button 1
+    tempButton = addButtonToLayer(layerSettings);  // button 1
 
     setButton(tempButton,
-        BIPUI_BOTTOM_RIGHT_POINT,
-        BIPUI_BOTTOM_RIGHT_POINT,
+        BIPUI_BOTTOM_LEFT_POINT,
+        BIPUI_BOTTOM_LEFT_POINT,
         getWindowByIndex(LEFT_WINDOW_INDEX)->name,
         COLOR_SH_WHITE,
         getWindowByIndex(LEFT_WINDOW_INDEX)->layerArray[0]->backgroundColour,
         COLOR_SH_BLACK,
         changeWindowColourCallbackFunction,
-        BUTTON_STYLE_SQUARED_NOBORDER);
+        BUTTON_STYLE_DEFAULT_SQUARED);
 
-    movePoint(&tempButton->topLeft, LEFT, DEFAULT_BUTTON_HEIGHT);
-    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_WIDTH); 
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT);
+    movePoint(&tempButton->bottomRight, RIGHT, DEFAULT_BUTTON_WIDTH);
+
+    tempButton = addButtonToLayer(layerSettings);           // button 2
+
+    setButton(tempButton,
+        BIPUI_BOTTOM_RIGHT_POINT,
+        BIPUI_BOTTOM_RIGHT_POINT,
+        getWindowByIndex(RIGHT_WINDOW_INDEX)->name,
+        COLOR_SH_WHITE,
+        getWindowByIndex(RIGHT_WINDOW_INDEX)->layerArray[0]->backgroundColour,
+        COLOR_SH_BLACK,
+        changeWindowColourCallbackFunction,
+        BUTTON_STYLE_DEFAULT_SQUARED);
+
+    movePoint(&tempButton->topLeft, LEFT, DEFAULT_BUTTON_WIDTH);
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT); 
+
+    tempButton = addButtonToLayer(layerSettings);           // button 3
+
+    setButton(tempButton,
+        BIPUI_BOTTOM_LEFT_POINT,
+        BIPUI_BOTTOM_LEFT_POINT,
+        getWindowByIndex(UP_WINDOW_INDEX)->name,
+        COLOR_SH_WHITE,
+        getWindowByIndex(UP_WINDOW_INDEX)->layerArray[0]->backgroundColour,
+        COLOR_SH_BLACK,
+        changeWindowColourCallbackFunction,
+        BUTTON_STYLE_DEFAULT_SQUARED);
+
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT);
+    movePoint(&tempButton->bottomRight, RIGHT, DEFAULT_BUTTON_WIDTH);
+
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT + 6);
+    movePoint(&tempButton->bottomRight, UP, DEFAULT_BUTTON_HEIGHT + 6);
+
+    tempButton = addButtonToLayer(layerSettings);           // button 4
+
+    setButton(tempButton,
+        BIPUI_BOTTOM_RIGHT_POINT,
+        BIPUI_BOTTOM_RIGHT_POINT,
+        getWindowByIndex(DOWN_WINDOW_INDEX)->name,
+        COLOR_SH_WHITE,
+        getWindowByIndex(DOWN_WINDOW_INDEX)->layerArray[0]->backgroundColour,
+        COLOR_SH_BLACK,
+        changeWindowColourCallbackFunction,
+        BUTTON_STYLE_DEFAULT_SQUARED);
+
+    movePoint(&tempButton->topLeft, LEFT, DEFAULT_BUTTON_WIDTH);
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT); 
+
+    movePoint(&tempButton->topLeft, UP, DEFAULT_BUTTON_HEIGHT + 6);
+    movePoint(&tempButton->bottomRight, UP, DEFAULT_BUTTON_HEIGHT + 6);
 
 
 }
@@ -141,7 +199,7 @@ void layerHelpConstructor(Layer_ *layerHelp)
     tbox->visible = 1;
     tbox->centerText = 0;
 
-    _strncpy(tbox->body, "All the windows were\ndefined in begin(). \n\nUsing the \"Settings\"\nbutton you can change \nthe background of any of \nthe other windows.", MAX_SIZE_TEXT_BOX);
+    _strncpy(tbox->body, "All the windows were\ndefined in begin(). \n\nUsing the \"Settings\"\nbutton you can change \nthe background of \nthe other windows.", MAX_SIZE_TEXT_BOX);
     
     layerHelp->textBox = tbox;
 
@@ -201,6 +259,8 @@ void layerCenterConstructor(Layer_ *layerMain)
 
 void begin(app_data_t *app_data)
 {
+
+    _srand(get_tick_count());
 
     // creating windows here, adding them to the viewport allocates them and increments the index
 

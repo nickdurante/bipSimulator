@@ -563,3 +563,18 @@ int show_menu_animate(void *show_menu_function, int param, int animate) {
 
     exit(7);
 }
+
+int _rand(void) {
+
+    return rand();
+}
+
+void _srand(unsigned int seed) {
+
+    srand(seed);
+}
+
+int get_tick_count(void) {
+
+    return rand();
+}

@@ -488,7 +488,7 @@ void drawButton(Button_ *button) // graphics of the button
     if(temp.textColour != temp.filling)
         set_fg_color(getLongColour(temp.textColour)); 
     else
-        set_fg_color(getLongColour(~temp.textColour));
+        set_fg_color(~getLongColour(temp.textColour));
 
     text_out_center(temp.label,                                     // the text
                     (int)(temp.topLeft.x + temp.bottomRight.x) / 2, // median
@@ -509,7 +509,7 @@ void caffeine(Caffeine_t coffee)
 long getLongColour(short colour)
 {
 
-    switch (colour)
+    switch ((unsigned short) colour)
     {
 
     case COLOR_SH_AQUA:
