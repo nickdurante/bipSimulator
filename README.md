@@ -1,6 +1,6 @@
 # BipSIM graphics simulator
 
-[Screenshot](docs/screenshot.bmp)
+[Screenshot](docs/bipUI_logo.png)
 
 ## Introduction
 
