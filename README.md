@@ -1,6 +1,6 @@
 # BipSIM graphics simulator
 
-[Screenshot](docs/screenshot.png)
+[Screenshot](docs/screenshot.bmp)
 
 ## Introduction
 
