@@ -1,4 +1,6 @@
-# bipEmulator
+# BipSIM graphics simulator
+
+[Screenshot]{docs/screenshot.png}
 
 ## Introduction
 
