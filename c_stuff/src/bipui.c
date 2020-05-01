@@ -1,9 +1,10 @@
 
+#define __SIMULATION__
 #ifdef __SIMULATION__
 #include <simulator.h>
 #endif
 
-#include "bipui.h"
+#include "bipui/bipui.h"
 
 void blank_screen(void)
 {
@@ -63,7 +64,7 @@ void drawTextBox(TextBox_ *box)
 
         text_out_center(box->body,                                      // the text
                     (int)(box->topLeft.x + box->bottomRight.x) / 2, // median
-                    (int)box->topLeft.y - 2);                       // slightly up
+                    (int)box->topLeft.y );                       // slightly up
     } else {
 
         text_out(box->body, (int) box->topLeft.x, (int) box->topLeft.y);

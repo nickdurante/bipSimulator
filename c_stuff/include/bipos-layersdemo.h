@@ -10,7 +10,7 @@
 #define __SIM_TEMPLATE_H__
 #define COLORS_COUNT 4
 
-#include "bipui.h"
+#include "bipui/bipui.h"
 
 
 // sim_template.c

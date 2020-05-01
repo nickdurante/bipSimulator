@@ -64,7 +64,7 @@ void simpleWindowCallbackFunction(Window_ *window, Way_ way)
 
 void changeWindowColourCallbackFunction(Layer_ *layer, short button_id){
 
-    short nextColour = (unsigned short) rand() % 7; // colour number
+    short nextColour = (unsigned short) rand() % COLORS_COUNT; // colour number
 
     layer->buttonArray[button_id]->filling = nextColour;
     getAppData()->vp.windowArray[button_id]->layerArray[0]->backgroundColour = nextColour;    
@@ -113,7 +113,7 @@ void layerSettingsConstructor(Layer_ *layerSettings)
         changeWindowColourCallbackFunction,
         BUTTON_STYLE_DEFAULT_SQUARED);
 
-    movePoint(&tempButton->topLeft, DOWN, DEFAULT_BUTTON_HEIGHT); 
+    movePoint(&tempButton->bottomRight, DOWN, DEFAULT_BUTTON_HEIGHT); 
 
     tempButton = addButtonToLayer(layerSettings);  // button 1
 
@@ -214,7 +214,7 @@ void layerCenterConstructor(Layer_ *layerMain)
     temp->bottomRight = BIPUI_CENTER_RIGHT_POINT;
     temp->background = COLOR_SH_MASK;
     temp->colour = COLOR_SH_BLACK;
-    _strcpy(temp->body, "Swipe in\nany direction.");
+    _strcpy(temp->body, "Swipe in\nany direction");
     temp->visible = 1; // do not forget to set visibility
     temp->centerText = 1;
 
@@ -234,9 +234,9 @@ void layerCenterConstructor(Layer_ *layerMain)
               "SETTINGS",
               COLOR_SH_WHITE,
               COLOR_SH_RED,
-              COLOR_SH_BLACK,
+              COLOR_SH_WHITE,
               goToSettingsCallbackFunction,
-              BUTTON_STYLE_ROUNDED_NOBORDER);
+              BUTTON_STYLE_SQUARED_NOBORDER);
 
     movePoint(&placeholderButton->topLeft, UP, height);
     movePoint(&placeholderButton->bottomRight, RIGHT, width);
@@ -249,9 +249,9 @@ void layerCenterConstructor(Layer_ *layerMain)
               "HELP",
               COLOR_SH_WHITE,
               COLOR_SH_BLUE,
-              COLOR_SH_BLACK,
+              COLOR_SH_WHITE,
               goToHelpCallbackFunction,
-              BUTTON_STYLE_ROUNDED_NOBORDER);
+              BUTTON_STYLE_SQUARED_NOBORDER);
 
     movePoint(&placeholderButton->topLeft, UP, height);
     movePoint(&placeholderButton->topLeft, LEFT, width);
@@ -287,7 +287,7 @@ void begin(app_data_t *app_data)
     downWindow->callbackFunction = simpleWindowCallbackFunction;
 
     Window_ *settingsWindow = addWindowToViewport(vp); // index 5
-    setWindowName("Settings", settingsWindow);
+    setWindowName("Tap to change colour", settingsWindow);
     settingsWindow->callbackFunction = overlayWindowCallbackFunction;
 
     Window_ *helpWindow = addWindowToViewport(vp); //index 6
