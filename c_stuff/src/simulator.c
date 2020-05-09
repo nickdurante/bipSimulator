@@ -489,11 +489,11 @@ void vibrate(int count, int on_ms, int off_ms) {
     cJSON *count_out = cJSON_CreateNumber(count);             // vibration periods to execute
     cJSON_AddItemToObject(message, "periods", count_out);
 
-    cJSON *on_ms = cJSON_CreateNumber(on_ms);           // ON part of the halfperiod (PWM)
-    cJSON_AddItemToObject(message, "ms_on", on_ms);
+    cJSON *json_on_ms = cJSON_CreateNumber(on_ms);           // ON part of the halfperiod (PWM)
+    cJSON_AddItemToObject(message, "ms_on", json_on_ms);
 
-    cJSON *off_ms = cJSON_CreateNumber(off_ms);           // OFF part of the halfperiod
-    cJSON_AddItemToObject(message, "ms_off", off_ms);
+    cJSON *json_off_ms = cJSON_CreateNumber(off_ms);           // OFF part of the halfperiod
+    cJSON_AddItemToObject(message, "ms_off", json_off_ms);
 
     char *string = cJSON_Print(message);
     printf("%s\n", string);
