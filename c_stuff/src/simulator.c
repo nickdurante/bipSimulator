@@ -478,7 +478,28 @@ void *pvPortMalloc(int size) {
 
 void vibrate(int count, int on_ms, int off_ms) {
 
-    //don't do anything for now
+    cJSON *message = cJSON_CreateObject();
+
+    cJSON *from = cJSON_CreateString("app"); // from : app
+    cJSON_AddItemToObject(message, "from", from);
+
+    cJSON *action = cJSON_CreateString("vibration"); //action : vibration
+    cJSON_AddItemToObject(message, "action", action);
+
+    cJSON *count_out = cJSON_CreateNumber(count);             // vibration periods to execute
+    cJSON_AddItemToObject(message, "periods", count_out);
+
+    cJSON *on_ms = cJSON_CreateNumber(on_ms);           // ON part of the halfperiod (PWM)
+    cJSON_AddItemToObject(message, "ms_on", on_ms);
+
+    cJSON *off_ms = cJSON_CreateNumber(off_ms);           // OFF part of the halfperiod
+    cJSON_AddItemToObject(message, "ms_off", off_ms);
+
+    char *string = cJSON_Print(message);
+    printf("%s\n", string);
+
+    ws_sendframe(getClientID(), (char *)string, true);
+    free(message);
 }
 
 int _memclr(void *buf, int len) {
@@ -526,12 +547,13 @@ void set_update_period(int cmd, int period) {
     cJSON *action = cJSON_CreateString("set_redraw_time"); //action : set_redraw_time
     cJSON_AddItemToObject(message, "action", action);
 
-    cJSON *time = cJSON_CreateNumber(period);
+    cJSON *cmd_out = cJSON_CreateBool(cmd);             // 0 aborts current timer
+    cJSON_AddItemToObject(message, "cmd", cmd_out);
+
+    cJSON *time = cJSON_CreateNumber(period);           // for cmd=1 packets, time in ms to schedule
     cJSON_AddItemToObject(message, "time", time);
 
-    cJSON *cmd_out = cJSON_CreateBool(cmd);
-    cJSON_AddItemToObject(message, "cmd", cmd_out);
-        char *string = cJSON_Print(message);
+    char *string = cJSON_Print(message);
     printf("%s\n", string);
 
     ws_sendframe(getClientID(), (char *)string, true);

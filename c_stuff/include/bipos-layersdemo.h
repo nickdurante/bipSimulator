@@ -17,7 +17,9 @@
 int main_app(int param0);
 
 void show_screen(void *return_screen);
-void key_press_screen();
+void shortKeyPressHandler();
+void longKeyPressHandler(void);
+
 int interactionHandler(void *param);
 void refreshScreen();
 

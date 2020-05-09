@@ -63,19 +63,34 @@ void onmessage(int fd, const unsigned char *msg)
 		tempGest.gesture = type->valueint;
 		tempGest.touch_pos_x= x_out->valueint;
 		tempGest.touch_pos_y = y_out->valueint;
+		interactionHandler(&tempGest);
+		printf("Received a tap");
 	}
-	else if (type->valueint > 1 && type->valueint < 6) {
+	else if (type->valueint > 1 && type->valueint < 6) {	// swipe
 
 		tempGest.gesture = type->valueint;
 		tempGest.touch_pos_x= 0;
 		tempGest.touch_pos_y = 0;
-	} else {
+		interactionHandler(&tempGest);
+		printf("Received a swipe");
+
+	} else if (type->valueint == 6) {			// button short
+
+		shortKeyPressHandler();
+		printf("Received a SHORT keypress");
+
+	} else if (type->valueint == 7) {			// button long
+
+		longKeyPressHandler();
+		printf("Received a LONG keypress");
+
+	}else {
 
 		exit(9);	//invalid message
 	}
 
 
-	interactionHandler(&tempGest);
+	
 
 }
 

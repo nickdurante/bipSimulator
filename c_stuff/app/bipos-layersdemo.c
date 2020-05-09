@@ -26,12 +26,12 @@ struct regmenu_ screen_data = {
     1,                  //	swipe_scr - auxiliary screen number (usually 1)
     0,                  //	overlay - 0
     interactionHandler, //          - pointer to the handler of interaction (touch, swipe, long press)
-    key_press_screen,   //	        - handler of short button press
+    shortKeyPressHandler,   //	        - handler of short button press
     refreshScreen,      //	        - timer callback function and..
     0,                  //	            ..the variable passed to it
     show_screen,        //	        - function writing to video buffer and..
     0,                  //              ..the variable passed to it
-    0                   //	        - handler of long button press
+    longKeyPressHandler                   //	        - handler of long button press
 };
 
 #ifdef __SIMULATION__
@@ -394,7 +394,19 @@ void show_screen(void *param0)
     refreshWindow(app_data->vp.active, 1);
 }
 
-void key_press_screen()
+void shortKeyPressHandler()
+{
+    
+    app_data_t *app_data = getAppData();
+
+    // destroy all elements, memory leaks are bad
+    destroyViewport(&app_data->vp);
+
+    // call the return function (usually this is the start menu), specify the address of the function of our application as a parameter
+    show_menu_animate(app_data->ret_f, (unsigned int)show_screen, ANIMATE_RIGHT);
+};
+
+void longKeyPressHandler()
 {
     
     app_data_t *app_data = getAppData();
