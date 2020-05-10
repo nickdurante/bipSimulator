@@ -16,6 +16,7 @@
         "*.tcc": "c",
         "typeinfo": "c",
         "cstdbool": "c",
-        "bipos-layersdemo.h": "c"
+        "bipos-layersdemo.h": "c",
+        "calend.h": "c"
     }
 }

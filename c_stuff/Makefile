@@ -15,7 +15,7 @@
 
 CC=gcc
 AR=ar
-INCLUDE  = $(CURDIR)/include
+INCLUDE  = $(CURDIR)/include $(CURDIR)/include/bipui
 SRC      = $(CURDIR)/src
 CFLAGS   =  -Wall #-Werror
 CFLAGS  +=  -I $(INCLUDE) -std=c99

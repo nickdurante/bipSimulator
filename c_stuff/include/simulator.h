@@ -6,6 +6,11 @@
 #define VIDEO_X 176
 #define VIDEO_Y 176
 
+#define _sprintf sprintf
+#define _strlen strlen
+
+
+
 #define NULL ((void *)0)
 
 #ifndef min
@@ -19,6 +24,9 @@
 #ifndef abssub
 #define abssub(x, y) ((x) > (y) ? (x) - (y) : (y) - (x))
 #endif
+
+#define false 0
+#define true 1
 
 #define MAX_NUM_BUTTONS 8
 #define MAX_SIZE_BUTTON_LABEL 15
@@ -433,12 +441,14 @@ int get_var_menu_overlay(void);
 
 app_data_t *get_app_data_ptr(void);
 int set_app_data_ptr(app_data_t *app_data);
-int _sprintf(char *buf, const char *format, ...);
+
 
 int _rand();                  
 void _srand(unsigned int seed);
 
 int show_menu_animate(void *show_menu_function, int param, int animate);
 int get_tick_count(void);
+
+// Second round of functions to emulate
 
 #endif

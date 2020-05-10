@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "bipui/bipui.h"
+#include "bipui.h"
 
 
 int ID_client = 0;
