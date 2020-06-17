@@ -1,6 +1,7 @@
 # BipSIM graphics simulator
 
 ![Screenshot](docs/screenshot.bmp)
+The Layers Demo app in this screenshot is here: [repo link](https://github.com/enricorov/bipos-layersdemo) 
 
 ## Introduction
 
