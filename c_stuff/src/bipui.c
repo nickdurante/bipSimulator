@@ -5,59 +5,6 @@
 
 #include "bipui.h"
 
-void resume_if_applicable(void *param0, struct regmenu_ screen_data) {
-
-    #ifdef __SIMULATION__
-        app_data_t *app_data = get_app_data_ptr();
-        app_data_t **app_data_p = &app_data;
-    #else
-        app_data_t **app_data_p = get_ptr_temp_buf_2(); //	pointer to a pointer to screen data
-        app_data_t *app_data = *app_data_p;             //	pointer to screen data
-    #endif
-
-	Elf_proc_ *proc;
-
-	// check the source at the procedure launch
-	if ((param0 == *app_data_p) && get_var_menu_overlay())
-	{ // return from the overlay screen (incoming call, notification, alarm, target, etc.)
-
-		app_data = *app_data_p; //	the data pointer must be saved for the deletion
-								//	release memory function reg_menu
-		*app_data_p = NULL;		//	reset the pointer to pass it to the function reg_menu
-
-		// 	create a new screen when the pointer temp_buf_2 is equal to 0 and the memory is not released
-		reg_menu(&screen_data, 0); // 	menu_overlay=0
-
-		*app_data_p = app_data;
-	}
-	else
-	{ // if the function is started for the first time i.e. from the menu
-
-		// create a screen (register in the system)
-		reg_menu(&screen_data, 0);
-
-		// allocate the necessary memory and place the data in it (the memory by the pointer stored at temp_buf_2 is released automatically by the function reg_menu of another screen)
-		*app_data_p = (app_data_t *)pvPortMalloc(sizeof(app_data_t));
-		app_data = *app_data_p; //	data pointer
-
-		// clear the memory for data
-		_memclr(app_data, sizeof(app_data_t));
-
-		//	param0 value contains a pointer to the data of the running process structure Elf_proc_
-		app_data->proc = param0;
-
-		// remember the address of the pointer to the function you need to return to after finishing this screen
-		if (param0 && proc->ret_f) //	if the return pointer is passed, then return to it
-			app_data->ret_f = proc->elf_finish;
-		else //	if not, to the watchface
-			app_data->ret_f = show_watchface;
-
-		#ifdef __SIMULATION__
-			set_app_data_ptr(app_data);
-		#endif
-    }
-}
-
 void blank_screen(void)
 {
 
