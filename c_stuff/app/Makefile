@@ -14,22 +14,28 @@
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 CC=gcc
-WSDIR    = $(CURDIR)/../
-INCLUDE  = -I $(WSDIR)/include -I /usr/local/include
+WSDIR    = $(CURDIR)/..
+INCLUDE  = -I$(WSDIR)/include/ \
+			-I$(WSDIR)/../../libbip \
+			-I/usr/local/include
 CFLAGS   = -g 
 CFLAGS  += $(INCLUDE) -std=c99 -pthread
 LIB      = $(WSDIR)/libws.a
-SOURCES  = $(WSDIR)/src/*.c
-SOURCES += $(WSDIR)/app/*.c
+# SOURCES  = $(WSDIR)/src/*.c
+# SOURCES += $(WSDIR)/app/*.c
+
+_SRCS=metronome.c
+SOURCES = $(patsubst %,$(WSDIR)/src/%,$(_SRCS))
+SOURCES += $(patsubst %,$(WSDIR)/app/%,$(_SRCS))
 
 
 all: libws bipsim
 
 libws:
-	cd $(WSDIR) && $(MAKE) all
+	cd $(WSDIR) && $(MAKE) libws
 
 bipsim:
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o bipsim $(LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(_SRCS) -o bipsim $(LIB)
 
 clean:
 	@rm -f $(WSDIR)/src/*.o
