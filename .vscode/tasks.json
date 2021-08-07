@@ -3,29 +3,57 @@
         {
             "type": "shell",
             "label": "make",
-            "command": "make clean && make",
-            /*"args": [
-                "-g",
-                "-I",
-                "${workspaceFolder}/c_stuff/include",
-                "-I",
-                "/usr/local/include",
-                "-fpermissive",
-                "-std=c99",
-                "-pthread",
-                "${workspaceFolder}/c_stuff/src/*.c",
-                "${workspaceFolder}/c_stuff/app/*.c",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
-                "${workspaceFolder}/c_stuff/libws.a"
-            ],*/
+            "command": "make",
+            "args": ["${input:whichMake}"],
             "options": {
-                "cwd": "${workspaceFolder}/c_stuff/src/"
+                "cwd": "${workspaceFolder}/c_stuff/"
             },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "make clean",
+            "dependsOn": "clean",
+            "command": "make",
+            // "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/c_stuff/"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "clean",
+            "command": "make clean",
+            // "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/c_stuff/"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "whichMake",
+            "description": "make args",
+            "options": [
+                "all", 
+                "sim",
+                "libws",
+                "bipsim",
+                "clean"
+            ]
+            // "default": "all"
+
         }
     ],
     "version": "2.0.0"

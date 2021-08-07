@@ -18,5 +18,6 @@
         "cstdbool": "c",
         "bipos-layersdemo.h": "c",
         "calend.h": "c"
-    }
+    },
+    "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }
