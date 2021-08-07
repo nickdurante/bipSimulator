@@ -13,33 +13,80 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+LIB_NAME = libws
 CC=gcc
 AR=ar
-INCLUDE  = $(CURDIR)/include
+
+LIB_BIP_FOLDER=C:\dev\bip\libbip
+INCLUDES  = -I$(CURDIR)/include/sim
 SRC      = $(CURDIR)/src
-CFLAGS   =  -Wall #-Werror
-CFLAGS  +=  -I $(INCLUDE) -std=c99
-ARFLAGS  =  cru
-LIB      =  libws.a
+BUILD_DIR	= ./build
+LIBWS_DIR	= ./bin 
+CFLAGS   =  -Wall -std=c99
+# CFLAGS  +=  -std=c99
+ARFLAGS  =  cr
+LIB_A      =  $(LIB_NAME).a
 
-C_SRC = $(wildcard $(SRC)/base64/*.c)    \
-		$(wildcard $(SRC)/handshake/*.c) \
-		$(wildcard $(SRC)/sha1/*.c)      \
-		$(wildcard $(SRC)/cJSON/*.c)    \
-		$(wildcard $(SRC)/*.c)
+# C_SRC = $(wildcard $(SRC)/sim/base64/*.c)    \
+# 		$(wildcard $(SRC)/sim/handshake/*.c) \
+# 		$(wildcard $(SRC)/sim/sha1/*.c)      \
+# 		$(wildcard $(SRC)/sim/neo/*.c)      \
+# 		$(wildcard $(SRC)/sim/cJSON/*.c)    \
+# 		$(wildcard $(SRC)/*.c)
 
-OBJ = $(C_SRC:.c=.o)
+SOURCES_C := $(wildcard src/*.c)
+SOURCES_NEO := $(shell find include/neo -name *.c)
+SOURCES_ADDITIONAL := $(shell find src/base64 -name *.c) \
+						$(shell find src/cJSON -name *.c) \
+						$(shell find src/handshake -name *.c) \
+						$(shell find src/sha1 -name *.c)
 
-all: $(OBJ)
-	$(AR) $(ARFLAGS) $(LIB) $^
+SOURCES_SIM := $(wildcard src/simu*.c)
+OBJS_SIM := $(SOURCES_SIM:%.c=%.o)
 
-%.o: %.c
-	$(CC) $< $(CFLAGS) -c -o $@
+
+SRCS	=  $(SOURCES_C) \
+			$(SOURCES_NEO) \
+			$(SOURCES_ADDITIONAL)
+
+
+_OBJS 	:= $(notdir $(SRCS:%.c=%.o))
+OBJS 	= $(patsubst %,$(BUILD_DIR)/%,$(_OBJS))
+# OBJS 	= $(BUILD_DIR)/$(_OBJS)
+
+all: $(LIB_NAME)
+
+mock:
+	$(info objs: $(OBJS))
+	$(info =)
+	$(info _objs: $(_OBJS))
+	$(info =)
+	$(info - neo: $(SOURCES_NEO))
+	$(info - deps: $(SOURCES_ADDITIONAL))
+	$(info - sources: $(SOURCES_C))
+	$(info =)
+
+sim : 
+	$(CC) $(CFLAGS) $(INCLUDES) -c $(SOURCES_SIM) -o $(OBJS_SIM)
+
+
+app: $(LIB_NAME) libbip
+
+libbip:
+	$(MAKE) -C app
+
+# libws: $(BUILD_DIR)/%.o
+$(LIB_NAME): $(_OBJS)
+	@$(AR) $(ARFLAGS) $(LIB_A) $^
+# $(info sources: $(SRCS))
+# $(info objs: $(OBJ))
+	$(info Build complete)
+
+$(_OBJS): $(SRCS)
+	$(info objs: $(OBJ))
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	@rm -f $(SRC)/base64/*.o
-	@rm -f $(SRC)/handshake/*.o
-	@rm -f $(SRC)/sha1/*.o
-	@rm -f $(SRC)/cJSON/*.o
-	@rm -f $(SRC)/*.o
-	@rm -f $(LIB)
+	rm -f $(BUILD_DIR)/*.o
+	rm -f *.o
+	$(info Clean complete)
