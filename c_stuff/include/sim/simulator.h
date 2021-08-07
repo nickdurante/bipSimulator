@@ -1,188 +1,222 @@
 #ifndef __SIMULATOR_H__
 #define __SIMULATOR_H__
 
-#define LIBBIP_VERSION "1.2"
+// to_the_moon 🚀
+#define APP_LOG(fmt, args...)                                \
+  printf(fmt, ## args)
 
-#define VIDEO_X 176
-#define VIDEO_Y 176
-
-#define _sprintf sprintf
-#define _strlen strlen
-
-
-
-#define NULL ((void *)0)
-
-#ifndef min
-#define min(x, y) ((x) < (y) ? (x) : (y))
-#endif
-
-#ifndef max
-#define max(x, y) ((x) > (y) ? (x) : (y))
-#endif
-
-#ifndef abssub
-#define abssub(x, y) ((x) > (y) ? (x) - (y) : (y) - (x))
-#endif
-
-#define false 0
-#define true 1
-
-#define MAX_NUM_BUTTONS 8
-#define MAX_SIZE_BUTTON_LABEL 15
-#define MAX_SIZE_TEXT_BOX 180
-
-#define DEFAULT_BUTTON_WIDTH 81
-#define DEFAULT_BUTTON_HEIGHT 45
-
-#define MAX_SIZE_WINDOW_LABEL 30
-
-#define MAX_NUM_WINDOWS 10
-
-#define MAX_NUM_LAYERS 2
-
-#define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
-
-#define DEFAULT_TEXT_HEIGHT 20
-
-typedef struct Point_
+#define SIM_LOG(fmt, args...)                                \
+  printf(fmt, ## args)
+// simulation defines
+typedef enum BipSim_Return_t
 {
+    BIPSIM_SUCCESS = 0, 
+    BIPSIM_CMD_ERROR, 
+    BIPSIM_ABORT
 
-    short x,
-        y;
-} Point_;
+} BipSim_Return_t;
 
-typedef enum Caffeine_t
+// tap, short press, long press. Used to 
+typedef enum InteractionMode 
 {
+    TAP = 1,
+    BTN_SHORT,
+    BTN_LONG
+} InteractionMode;
 
-    WEAK,  // 0 - screen backlight will go off
-    STRONG // 1 - backlight always on
+#define InteractionHandler void *
 
-} Caffeine_t;
+// callback functions stricture
+typedef struct _interactionCallbacks {
 
-typedef enum Style_t
-{
+    InteractionHandler _tapCallback;
+    InteractionHandler _shortBtnCallback;
+    InteractionHandler _longBtnCallback;
 
-    BUTTON_STYLE_DEFAULT_SQUARED,
-    BUTTON_STYLE_SQUARED_NOBORDER,
-    BUTTON_STYLE_ROUNDED_NOBORDER
+} _interactionCallbacks;
+// see also subscribe to short button press
 
-} Style_t;
 
-typedef enum Way_
-{
+// #define LIBBIP_VERSION "1.2"
 
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    CENTER
+// #define VIDEO_X 176
+// #define VIDEO_Y 176
 
-} Way_;
+// #define _sprintf sprintf
+// #define _strlen strlen
 
-typedef struct ButtonParams_
-{
-    Style_t style;
+// #define NULL ((void *)0)
 
-} ButtonParams_;
+// #ifndef min
+// #define min(x, y) ((x) < (y) ? (x) : (y))
+// #endif
 
-typedef struct Button_
-{
+// #ifndef max
+// #define max(x, y) ((x) > (y) ? (x) : (y))
+// #endif
 
-    Point_ topLeft,
-        bottomRight;
+// #ifndef abssub
+// #define abssub(x, y) ((x) > (y) ? (x) - (y) : (y) - (x))
+// #endif
 
-    char label[MAX_SIZE_BUTTON_LABEL];
+// #define false 0
+// #define true 1
 
-    short border, // color of button features
-        filling,
-        textColour;
+// #define MAX_NUM_BUTTONS 8
+// #define MAX_SIZE_BUTTON_LABEL 15
+// #define MAX_SIZE_TEXT_BOX 180
 
-    char visible;
+// #define DEFAULT_BUTTON_WIDTH 81
+// #define DEFAULT_BUTTON_HEIGHT 45
 
-    void (*callbackFunction)();
+// #define MAX_SIZE_WINDOW_LABEL 30
 
-    ButtonParams_ params; // style, state..
+// #define MAX_NUM_WINDOWS 10
 
-} Button_;
+// #define MAX_NUM_LAYERS 2
 
-typedef struct TextBox_
-{
+// #define DEFAULT_BORDER_THICKNESS 4 // minimum reasonable distance of button edge to screen
 
-    Point_ topLeft,
-        bottomRight;
+// #define DEFAULT_TEXT_HEIGHT 20
 
-    char body[MAX_SIZE_TEXT_BOX];
+// typedef struct Point_
+// {
 
-    short colour,
-        background;
+//     short x,
+//         y;
+// } Point_;
 
-    char visible;
-    char centerText;        // 1: render text centered, 0: render normally
+// typedef enum Caffeine_t
+// {
+
+//     WEAK,  // 0 - screen backlight will go off
+//     STRONG // 1 - backlight always on
+
+// } Caffeine_t;
+
+// typedef enum Style_t
+// {
+
+//     BUTTON_STYLE_DEFAULT_SQUARED,
+//     BUTTON_STYLE_SQUARED_NOBORDER,
+//     BUTTON_STYLE_ROUNDED_NOBORDER
+
+// } Style_t;
+
+// typedef enum Way_
+// {
+
+//     UP,
+//     DOWN,
+//     LEFT,
+//     RIGHT,
+//     CENTER
+
+// } Way_;
+
+// typedef struct ButtonParams_
+// {
+//     Style_t style;
+
+// } ButtonParams_;
+
+// typedef struct Button_
+// {
+
+//     Point_ topLeft,
+//         bottomRight;
+
+//     char label[MAX_SIZE_BUTTON_LABEL];
+
+//     short border, // color of button features
+//         filling,
+//         textColour;
+
+//     char visible;
+
+//     void (*callbackFunction)();
+
+//     ButtonParams_ params; // style, state..
+
+// } Button_;
+
+// typedef struct TextBox_
+// {
+
+//     Point_ topLeft,
+//         bottomRight;
+
+//     char body[MAX_SIZE_TEXT_BOX];
+
+//     short colour,
+//         background;
+
+//     char visible;
+//     char centerText;        // 1: render text centered, 0: render normally
     
-} TextBox_;
+// } TextBox_;
 
-typedef struct LayerParams_
-{
+// typedef struct LayerParams_
+// {
 
-    short state;
+//     short state;
 
-} LayerParams_;
+// } LayerParams_;
 
-typedef struct Layer_
-{
+// typedef struct Layer_
+// {
 
-    Button_ *buttonArray[MAX_NUM_BUTTONS]; // all buttons
-    unsigned short buttonIndex;            // current valid button, init=0
+//     Button_ *buttonArray[MAX_NUM_BUTTONS]; // all buttons
+//     unsigned short buttonIndex;            // current valid button, init=0
 
-    short backgroundColour; // background for the current Layer
-    char visible;           // is the layer visible?
+//     short backgroundColour; // background for the current Layer
+//     char visible;           // is the layer visible?
 
-    TextBox_ *textBox; // textbox for general usage
+//     TextBox_ *textBox; // textbox for general usage
 
-    LayerParams_ params; // holding state of the layer
-    //void (*callbackFunction)();
-} Layer_;
+//     LayerParams_ params; // holding state of the layer
+//     //void (*callbackFunction)();
+// } Layer_;
 
-typedef struct Window_
-{
-    int neighbors[4]; //pointers to neighboring windows (up. down, left, right)
+// typedef struct Window_
+// {
+//     int neighbors[4]; //pointers to neighboring windows (up. down, left, right)
 
-    char name[MAX_SIZE_WINDOW_LABEL];
-    char nameVisible;
+//     char name[MAX_SIZE_WINDOW_LABEL];
+//     char nameVisible;
 
-    Layer_ *layerArray[MAX_NUM_LAYERS];
-    char layerIndex;
+//     Layer_ *layerArray[MAX_NUM_LAYERS];
+//     char layerIndex;
 
-    void (*callbackFunction)();
+//     void (*callbackFunction)();
 
-} Window_;
-typedef struct Viewport_
-{
+// } Window_;
+// typedef struct Viewport_
+// {
 
-    Window_ *windowArray[MAX_NUM_WINDOWS];
-    char windowIndex;
+//     Window_ *windowArray[MAX_NUM_WINDOWS];
+//     char windowIndex;
 
-    Window_ *active;
+//     Window_ *active;
 
-} Viewport_;
+// } Viewport_;
 
-typedef struct Game_
-{
+// typedef struct Game_
+// {
 
-    unsigned short score;
-    unsigned short record;
-} Game_;
+//     unsigned short score;
+//     unsigned short record;
+// } Game_;
 
 typedef struct app_data_t
 {
     void *ret_f; //	the address of the return function
 
-    Viewport_ vp;
+    // Viewport_ vp;
 } app_data_t;
 
 // screen structure
-struct regmenu_
+typedef struct regmenu_
 {
     char curr_scr;        //	menu section
     char swipe_scr;       //  submenu section
@@ -194,7 +228,7 @@ struct regmenu_
         *show_menu_funct, //	screen forming function
         *show_menu_buff,  //	variable for screen forming function
         *long_key_press;  //	function of processing a long press on the side button
-};
+} regmenu_;
 
 //	gesture structure when processing clicks on the screen and side button
 struct gesture_
@@ -450,5 +484,15 @@ int show_menu_animate(void *show_menu_function, int param, int animate);
 int get_tick_count(void);
 
 // Second round of functions to emulate
+
+extern int interactionHandler(void *param);
+void setClientID(int clientID);
+
+extern void main_app(int arg);
+
+// Register callback to events
+// interaction
+
+BipSim_Return_t bs_interaction_subscribe(regmenu_ *context, InteractionMode mode, InteractionHandler Handler);
 
 #endif
