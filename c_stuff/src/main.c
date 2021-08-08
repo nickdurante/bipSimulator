@@ -130,7 +130,7 @@ int main()
 
 	// invoking the app's show_screen a.k.a. "the main" and only func called from main
 	// show_screen(0);
-	main(0);
+	main_app(0);
 
 	pthread_join(threadID, NULL);
 

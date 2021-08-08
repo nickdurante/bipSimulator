@@ -1,12 +1,16 @@
 #ifndef __SIMULATOR_H__
 #define __SIMULATOR_H__
 
+#include <stdarg.h>
+#include <stdio.h>
+
 // to_the_moon 🚀
 #define APP_LOG(fmt, args...)                                \
   printf(fmt, ## args)
 
 #define SIM_LOG(fmt, args...)                                \
   printf(fmt, ## args)
+
 // simulation defines
 typedef enum BipSim_Return_t
 {
@@ -297,9 +301,10 @@ int get_var_menu_overlay(void);
 // app_data_t *get_app_data_ptr(void);
 // int set_app_data_ptr(app_data_t *app_data);
 
-
+//function stubs
 int _rand();                  
 void _srand(unsigned int seed);
+void _sprintf(const char *fmt, ...);
 
 int show_menu_animate(void *show_menu_function, int param, int animate);
 int get_tick_count(void);
