@@ -18,7 +18,9 @@ CC=gcc
 AR=ar
 
 LIB_BIP_FOLDER=C:\dev\bip\libbip
-INCLUDES  = -I$(CURDIR)/include/sim
+INCLUDES  = -I$(CURDIR)/include \
+			-I$(CURDIR)/include/sim \
+			-I$(CURDIR)/app/app_include
 SRC      = $(CURDIR)/src
 BUILD_DIR	= ./build
 LIBWS_DIR	= ./bin 
@@ -40,14 +42,15 @@ SOURCES_ADDITIONAL := $(shell find src/base64 -name *.c) \
 						$(shell find src/cJSON -name *.c) \
 						$(shell find src/handshake -name *.c) \
 						$(shell find src/sha1 -name *.c)
-
-SOURCES_SIM := $(wildcard src/simu*.c)
-OBJS_SIM := $(SOURCES_SIM:%.c=%.o)
-
+SOURCES_APP := $(shell find app/bipui -name *.c)
 
 SRCS	=  $(SOURCES_C) \
 			$(SOURCES_NEO) \
-			$(SOURCES_ADDITIONAL)
+			$(SOURCES_ADDITIONAL) \
+			$(SOURCES_APP)
+
+SOURCES_SIM := $(wildcard src/simu*.c)
+OBJS_SIM := $(SOURCES_SIM:%.c=%.o)
 
 
 _OBJS 	:= $(notdir $(SRCS:%.c=%.o))
