@@ -4,9 +4,6 @@
 			"path": ".."
 		},
 		{
-			"path": "../../bipsim-template"
-		},
-		{
 			"path": "../../libbip"
 		}
 	],
