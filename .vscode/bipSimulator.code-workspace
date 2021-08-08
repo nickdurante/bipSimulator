@@ -29,7 +29,8 @@
 			"calend.h": "c",
 			"stddef.h": "c",
 			"*.splice": "c",
-			"simulator.h": "c"
+			"simulator.h": "c",
+			"string.h": "c"
 		}
 	}
 }

@@ -38,6 +38,19 @@
             "problemMatcher": [
                 "$gcc"
             ]
+        },
+        {
+            "type": "process",
+            "label": "inspect lib",
+            "command": "ar -t",
+            "args": ["libws.a"],
+            "options": {
+                "cwd": "${workspaceFolder}/c_stuff/"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
         }
     ],
     "inputs": [
