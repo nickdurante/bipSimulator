@@ -1,33 +1,33 @@
-/*
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include "cJSON.h"
-#include <ws.h>
- 
 
-#include "bipos-layersdemo.h"
+#include <simulator.h>
+#include <cJSON.h>
+#include <ws.h>
+#include <sha1.h>
+#include <base64.h>
+
 #include <pthread.h>
 
 #define WS_PORT 6789
 
+// App includes go here!
+#include <metronome.h>
+
 int connected = 0;
+
+void *(tap_cbk);
+void *(sPress_cbk);
+void *(lPress_cbk);
+
+// App-side stuff
+extern void show_screen(void * param0);
+extern _interactionCallbacks app_int_callbacks;
+
+extern app_data_t app_data_global;
 
 void onopen(int fd)
 {
@@ -48,22 +48,32 @@ void onclose(int fd)
 	free(cli);
 }
 
+// Here we parse data coming from the sim window interactions
 void onmessage(int fd, const unsigned char *msg)
 {
 
+	// action
 	cJSON *gesture = cJSON_Parse(msg);
 	cJSON *type = cJSON_GetObjectItem(gesture, "action"); // type is an int
 	cJSON *x_out = cJSON_GetObjectItem(gesture, "x");
 	cJSON *y_out = cJSON_GetObjectItem(gesture, "y");
-	
+
+	// tap_cbk = app_data_global.screen_data_p->dispatch_func;
+	// sPress_cbk = app_data_global.screen_data_p->key_press;
+	// lPress_cbk = app_data_global.screen_data_p->long_key_press;
+
 	struct gesture_ tempGest;
+
+	// function = app_data_global.
 
 	if (type->valueint == 1) {		// tap
 
 		tempGest.gesture = type->valueint;
 		tempGest.touch_pos_x= x_out->valueint;
 		tempGest.touch_pos_y = y_out->valueint;
-		interactionHandler(&tempGest);
+		// void *(tap_func) () = screen_data->dispatch_func;
+		app_data_global.screen_data_p->dispatch_func(&tempGest);
+
 		printf("Received a tap");
 	}
 	else if (type->valueint > 1 && type->valueint < 6) {	// swipe
@@ -71,17 +81,17 @@ void onmessage(int fd, const unsigned char *msg)
 		tempGest.gesture = type->valueint;
 		tempGest.touch_pos_x= 0;
 		tempGest.touch_pos_y = 0;
-		interactionHandler(&tempGest);
+		app_data_global.screen_data_p->dispatch_func(&tempGest);
 		printf("Received a swipe");
 
 	} else if (type->valueint == 6) {			// button short
 
-		shortKeyPressHandler();
+		app_data_global.screen_data_p->key_press(&tempGest);
 		printf("Received a SHORT keypress");
 
 	} else if (type->valueint == 7) {			// button long
 
-		longKeyPressHandler();
+		app_data_global.screen_data_p->long_key_press(&tempGest);
 		printf("Received a LONG keypress");
 
 	}else {
@@ -118,7 +128,9 @@ int main()
 		sleep(1);
 	} while(!connected);
 
-	main_app(0);
+	// invoking the app's show_screen a.k.a. "the main" and only func called from main
+	// show_screen(0);
+	main(0);
 
 	pthread_join(threadID, NULL);
 

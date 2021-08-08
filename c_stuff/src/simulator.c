@@ -8,35 +8,6 @@
 #include <simulator.h>
 
 int ID_client = 0;
-app_data_t *app_data_global;
-
-BipSim_Return_t bs_interaction_subscribe(regmenu_ *context, InteractionMode mode, InteractionHandler Handler) {
-    
-    if(!context)
-        SIM_LOG("Empty context provided. Exiting.");
-        return BIPSIM_ABORT;
-    
-    switch (mode)
-    {
-    case TAP:
-        context->dispatch_func = Handler;
-        SIM_LOG("Set TAP handler to %ld.", (long int) Handler);
-        break;
-    case BTN_SHORT:
-        context->key_press = Handler;
-        SIM_LOG("Set SHORT BTN handler to %ld.", (long int) Handler);
-    case BTN_LONG:
-        context->long_key_press = Handler;
-        SIM_LOG("Set LONG BTN handler to %ld.", (long int) Handler);
-        break;
-    
-    default:
-        return BIPSIM_CMD_ERROR;
-        break;
-    }
-
-    return BIPSIM_SUCCESS;
-}
 
 void setClientID(int clientID) {
 
@@ -595,17 +566,6 @@ void reg_menu(void *regmenu_, int param) {
 int get_var_menu_overlay(void) {
 
     return 0; // ignoring call/notification overlay for now
-}
-
-app_data_t *get_app_data_ptr(void) {
-
-    return app_data_global;
-}
-
-int set_app_data_ptr(app_data_t *app_data) {
-
-    app_data_global = app_data;
-    return 1;
 }
 
 int show_menu_animate(void *show_menu_function, int param, int animate) {
